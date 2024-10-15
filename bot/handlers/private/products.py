@@ -80,7 +80,7 @@ async def book_callback(msg: Message, state: FSMContext):
                                   count=price,
                                   total=int(product.price * price))
             await msg.answer(
-                f"Savatga qo'shildi: {data.get('product_name')}\n\nBuyurtma qilish uchun savatga o'ting!", reply_markup=await cart_from_users())
+                f"Savatga qo'shildi: {data.get('product_name')}\n\nBuyurtma qilish uchun savatga o'ting!", reply_markup=cart_from_users())
             await msg.answer(html.bold("Mahsulotni tanlang: "),
                              reply_markup=await inl_categories(),
                              parse_mode="HTML")
