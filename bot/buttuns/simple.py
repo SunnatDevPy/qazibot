@@ -29,7 +29,6 @@ def admin_panel():
         KeyboardButton(text="Excel kategoriya"),
         KeyboardButton(text="Excel mahsulot"),
         KeyboardButton(text="Reklama"),
-        KeyboardButton(text="Excel mahsulot"),
         KeyboardButton(text="◀️Ortga")
     ])
     kb.adjust(2, 2)
