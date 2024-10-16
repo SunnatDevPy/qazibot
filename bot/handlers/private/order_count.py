@@ -72,5 +72,5 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     if data.get('delivery') == '🏃Olib ketish🏃':
         await message.answer_location(latitude=41.342221, longitude=69.275769)
         await message.answer("Bizning manzil, QaziSay")
-    await bot.send_message(-4542185028, text[0], reply_markup=await confirm_order_in_group(order.id))
+    await bot.send_message(-1002455618820, text[0], reply_markup=await confirm_order_in_group(order.id))
     await state.clear()

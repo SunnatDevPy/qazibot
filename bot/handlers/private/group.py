@@ -22,8 +22,8 @@ async def group_handler(call: CallbackQuery, bot: Bot):
                                             reply_markup=None)
         await call.message.answer("Buyurtma qabul qilindi")
         order_text = await detail_text_order(int(data[-1]))
-        await bot.send_message(-1002396803845, order_text[0], parse_mode='HTML')
-        await bot.send_location(-1002396803845, order_text[-1], order_text[1])
+        await bot.send_message(-4563771246, order_text[0], parse_mode='HTML')
+        await bot.send_location(-4563771246, order_text[-1], order_text[1])
 
 
 # order_detail()
@@ -54,5 +54,5 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
         await call.message.edit_reply_markup(call.inline_message_id, reply_markup=None)
         if order.delivery == '🚕Yetkazib berish🚕':
             order_text = await detail_text_order(int(data[-1]))
-            await bot.send_message(-1002396803845, order_text[0], parse_mode='HTML')
-            await bot.send_location(-1002396803845, order_text[-1], order_text[1])
+            await bot.send_message(-4563771246, order_text[0], parse_mode='HTML')
+            await bot.send_location(-4563771246, order_text[-1], order_text[1])
