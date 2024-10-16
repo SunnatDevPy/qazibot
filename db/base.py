@@ -1,4 +1,4 @@
-from sqlalchemy import delete as sqlalchemy_delete, DateTime, update as sqlalchemy_update, select, func
+from sqlalchemy import delete as sqlalchemy_delete, DateTime, update as sqlalchemy_update, select, func, desc
 from sqlalchemy.ext.asyncio import AsyncAttrs, create_async_engine, AsyncSession
 from sqlalchemy.orm import DeclarativeBase, declared_attr, sessionmaker, Mapped, mapped_column
 
@@ -135,7 +135,7 @@ class AbstractClass:
 
     @classmethod
     async def get_books(cls, id_):
-        query = select(cls).where(cls.category_id == id_)
+        query = select(cls).where(cls.category_id == id_).order_by(cls.id)
         return (await db.execute(query)).scalars()
 
     @classmethod
@@ -145,7 +145,7 @@ class AbstractClass:
 
     @classmethod
     async def get_all(cls):
-        return (await db.execute(select(cls))).scalars().all()
+        return (await db.execute(select(cls).order_by(cls.id))).scalars().all()
 
 
 class Base(AsyncAttrs, DeclarativeBase, AbstractClass):
