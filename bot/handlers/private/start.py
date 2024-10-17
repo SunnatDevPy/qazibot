@@ -1,7 +1,7 @@
 from aiogram import Router, F, Bot
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove, Chat
 
 from bot.buttuns.inline import confirm_register_inl, permission_user
 from bot.buttuns.simple import get_contact, get_location, menu_button
@@ -13,23 +13,25 @@ from state.states import Register
 start_router = Router()
 
 
-@start_router.message(CommandStart())
+@start_router.message(CommandStart(), Chat.type == 'private')
 async def command_start(message: Message, state: FSMContext):
-    if message.chat.id in [-4563771246, -1002455618820]:
-        await message.answer("Sizda huquq yo'q", reply_markup=ReplyKeyboardRemove())
+    user = await User.get(message.from_user.id)
+    if not user:
+        await message.answer("Ro'yxatdan o'ting")
+        await state.set_state(Register.full_name)
+        await message.answer("Ism familiyangizni kiriting")
     else:
-        user = await User.get(message.from_user.id)
-        if not user:
-            await message.answer("Ro'yxatdan o'ting")
-            await state.set_state(Register.full_name)
-            await message.answer("Ism familiyangizni kiriting")
+        if message.from_user.id in [279361769, 5649321700] + [i for i in await User.get_admins()]:
+            await message.answer(f'Xush kelibsiz Admin {message.from_user.first_name}',
+                                 reply_markup=menu_button(admin=True))
         else:
-            if message.from_user.id in [279361769, 5649321700] + [i for i in await User.get_admins()]:
-                await message.answer(f'Xush kelibsiz Admin {message.from_user.first_name}',
-                                     reply_markup=menu_button(admin=True))
-            else:
-                await message.answer(f'Xush kelibsiz {message.from_user.first_name}',
-                                     reply_markup=menu_button(admin=False))
+            await message.answer(f'Xush kelibsiz {message.from_user.first_name}',
+                                 reply_markup=menu_button(admin=False))
+
+
+@start_router.message(Chat.type == 'GROUP')
+async def command_start(message: Message):
+    await message.answer("Sizda huquq yo'q", reply_markup=ReplyKeyboardRemove())
 
 
 @start_router.message(Register.full_name)
