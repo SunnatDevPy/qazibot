@@ -29,9 +29,9 @@ async def command_start(message: Message, state: FSMContext):
                                  reply_markup=menu_button(admin=False))
 
 
-@start_router.message(F.chat.type.in_['group', 'supergroup'])
-async def command_start(message: Message):
-    await message.answer("Sizda huquq yo'q", reply_markup=ReplyKeyboardRemove())
+# @start_router.message(F.chat.type.in_['group', 'supergroup'])
+# async def command_start(message: Message):
+#     await message.answer("Sizda huquq yo'q", reply_markup=ReplyKeyboardRemove())
 
 
 @start_router.message(Register.full_name)
