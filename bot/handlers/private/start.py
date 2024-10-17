@@ -13,7 +13,7 @@ from state.states import Register
 start_router = Router()
 
 
-@start_router.message(CommandStart(), Chat.type == 'private')
+@start_router.message(CommandStart(), Chat.type in ['private',])
 async def command_start(message: Message, state: FSMContext):
     user = await User.get(message.from_user.id)
     if not user:
@@ -29,7 +29,7 @@ async def command_start(message: Message, state: FSMContext):
                                  reply_markup=menu_button(admin=False))
 
 
-@start_router.message(Chat.type == 'GROUP')
+@start_router.message(Chat.type in ["GROUP", ])
 async def command_start(message: Message):
     await message.answer("Sizda huquq yo'q", reply_markup=ReplyKeyboardRemove())
 
