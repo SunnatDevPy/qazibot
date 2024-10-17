@@ -15,7 +15,7 @@ start_router = Router()
 
 @start_router.message(CommandStart())
 async def command_start(message: Message, state: FSMContext):
-    if message.chat.id in [-4542185028, -1002396803845]:
+    if message.chat.id in [-4563771246, -1002455618820]:
         await message.answer("Sizda huquq yo'q", reply_markup=ReplyKeyboardRemove())
     else:
         user = await User.get(message.from_user.id)
