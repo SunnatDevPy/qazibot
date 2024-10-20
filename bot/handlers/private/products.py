@@ -5,7 +5,7 @@ from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 from bot.buttuns.inline import inl_products, inl_categories
 from bot.buttuns.simple import cart_from_users
 from bot.detail_text import product_detail
-from db import Product
+from db import Product, User
 from db.models.model import Cart
 from state.states import ProductOrderState
 
@@ -35,9 +35,10 @@ async def book_callback(call: CallbackQuery, state: FSMContext):
     else:
         await call.answer()
         product = await Product.get(int(data[-1]))
-        text = await product_detail(product)
+        user = await User.get(call.from_user.id)
+        text = await product_detail(product, user)
         try:
-            await call.message.answer_photo(text[-1],
+            await call.message.answer_photo(text[1],
                                             caption=text[0], parse_mode='HTML')
         except:
             await call.message.answer(text[0], parse_mode='HTML')
@@ -48,11 +49,11 @@ async def book_callback(call: CallbackQuery, state: FSMContext):
         else:
             type = "kg"
             count = "(1,2 / 30)"
-        await state.update_data(product_id=int(data[-1]), type=type, product_name=product.title)
+        await state.update_data(product_id=int(data[-1]), type=type, product_name=product.title, price=text[-1])
         await state.set_state(ProductOrderState.count)
         await call.message.answer(
             html.bold(
-                f"Siz {product.title} mahsulotini tanladingiz\n"
+                f"Siz {product.title} mahsulotni tanladingiz\n"
                 f"Miqdorini kiriting!\n"
                 f"Masalan {count} {type}da harif qatnashmasin❗"),
             parse_mode="HTML", reply_markup=cart_from_users())
@@ -71,16 +72,16 @@ async def book_callback(msg: Message, state: FSMContext):
         try:
             price = float(msg.text.replace(',', '.').strip())
             await state.update_data(count=price)
-            product = await Product.get(int(data.get('product_id')))
             if product_in_cart:
-                await Cart.update(product_in_cart.id, count=product_in_cart.count + price,
-                                  total=product_in_cart.total + int(product.price * price))
+                await Cart.update(product_in_cart.id, count=data.get('price') + price,
+                                  total=product_in_cart.total + int(data.get('price') * price))
             else:
                 await Cart.create(user_id=msg.from_user.id, product_id=data.get("product_id"),
                                   count=price,
-                                  total=int(product.price * price))
+                                  total=int(data.get('price') * price))
             await msg.answer(
-                f"Savatga qo'shildi: {data.get('product_name')}\n\nBuyurtma qilish uchun savatga o'ting!", reply_markup=cart_from_users())
+                f"Savatga qo'shildi: {data.get('product_name')}\n\nBuyurtma qilish uchun savatga o'ting!",
+                reply_markup=cart_from_users())
             await msg.answer(html.bold("Mahsulotni tanlang: "),
                              reply_markup=await inl_categories(),
                              parse_mode="HTML")

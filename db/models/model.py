@@ -16,6 +16,7 @@ class User(CreateModel):
     long: Mapped[float] = mapped_column(nullable=True)
     idora: Mapped[str] = mapped_column(nullable=True)
     permission: Mapped[bool] = mapped_column(Boolean, default=False)
+    idora_turi: Mapped[str] = mapped_column(String, nullable=True)
     orders: Mapped[list['Order']] = relationship('Order', back_populates='order_from_user')
     carts: Mapped[list["Cart"]] = relationship('Cart', back_populates='cart_from_user')
 
@@ -36,8 +37,8 @@ class Product(Base):
     category_id: Mapped[int] = mapped_column(ForeignKey(Categorie.id, ondelete='CASCADE'))
     photo: Mapped[str] = mapped_column(String, nullable=True)
     title: Mapped[str] = mapped_column(String)
-    price: Mapped[int] = mapped_column(BIGINT)
-
+    restoran_price: Mapped[int] = mapped_column(BIGINT)
+    optom_price: Mapped[int] = mapped_column(BIGINT)
     type: Mapped[str] = mapped_column(String, SQLAlchemyEnum(BooleanEnum), nullable=False)
     description: Mapped[str] = mapped_column(Text)
     category: Mapped['Categorie'] = relationship('Categorie', back_populates='product_ids')

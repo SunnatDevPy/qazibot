@@ -76,6 +76,14 @@ async def confirm_order_in_group(id_):
     ikb.adjust(2)
     return ikb.as_markup()
 
+async def change_type_office(user_id):
+    ikb = InlineKeyboardBuilder()
+    ikb.add(*[
+        InlineKeyboardButton(text="Restoran", callback_data=f"type_Restoran_{user_id}"),
+        InlineKeyboardButton(text="Optom", callback_data=f'type_Optom_{user_id}')
+    ])
+    ikb.adjust(2)
+    return ikb.as_markup()
 
 async def change_order_in_group(order_id):
     ikb = InlineKeyboardBuilder()

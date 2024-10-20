@@ -15,7 +15,7 @@ order_router = Router()
 async def settings(message: Message):
     carts = await Cart.get_cart_in_user(message.from_user.id)
     if carts:
-        text = await cart(message.from_user.id)
+        text = await cart(message.from_user.id, carts)
         await message.answer(text, parse_mode="HTML", reply_markup=cart_detail_btn())
     else:
         await message.answer(html.bold("Savatingiz bo'sh!"), parse_mode="HTML")
@@ -74,3 +74,8 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
         await message.answer("Bizning manzil, QaziSay")
     await bot.send_message(-1002455618820, text[0], reply_markup=await confirm_order_in_group(order.id))
     await state.clear()
+
+
+
+
+# -1002455618820 -> Order group

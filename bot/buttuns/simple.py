@@ -26,6 +26,7 @@ def admin_panel():
         KeyboardButton(text="Admin qo'shish"),
         KeyboardButton(text="To'lanmagan buyurtmalar"),
         KeyboardButton(text="Id bo'yicha buyurtma"),
+        KeyboardButton(text="Qarzini yopish"),
         KeyboardButton(text="Excel kategoriya"),
         KeyboardButton(text="Excel mahsulot"),
         KeyboardButton(text="Reklama"),
@@ -58,6 +59,13 @@ def change_user_btn():
 def cart_from_users(order=0):
     kb = ReplyKeyboardBuilder()
     kb.add(*[KeyboardButton(text=f"🛒Savat"), KeyboardButton(text="◀️Ortga")])
+    return kb.as_markup(resize_keyboard=True)
+
+
+def debt_check():
+    kb = ReplyKeyboardBuilder()
+    kb.row(*[KeyboardButton(text=f"Summa kiritish"), KeyboardButton(text="Barchasini yopish")])
+    kb.row(*[KeyboardButton(text=f"Protsess to'xtatish")])
     return kb.as_markup(resize_keyboard=True)
 
 

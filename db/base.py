@@ -48,7 +48,7 @@ class AbstractClass:
 
     @classmethod
     async def get_from_user(cls, user_id):
-        query = select(cls).where(cls.user_id == user_id)
+        query = select(cls).where(cls.user_id == user_id).order_by(cls.id)
         return (await db.execute(query)).scalars().all()
 
     @classmethod
@@ -103,6 +103,21 @@ class AbstractClass:
     @classmethod
     async def get(cls, id_):
         query = select(cls).where(cls.id == id_)
+        return (await db.execute(query)).scalar()
+
+    @classmethod
+    async def get_from_username(cls, username):
+        query = select(cls).filter(cls.username.ilike(username + '%'))
+        return (await db.execute(query)).scalar()
+
+    @classmethod
+    async def get_from_contact(cls, contact):
+        query = select(cls).filter(cls.contact.ilike(contact + '%'))
+        return (await db.execute(query)).scalar()
+
+    @classmethod
+    async def get_from_idora(cls, idora):
+        query = select(cls).filter(cls.idora.ilike(idora + '%'))
         return (await db.execute(query)).scalar()
 
     @classmethod

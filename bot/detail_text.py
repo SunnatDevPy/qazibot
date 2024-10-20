@@ -5,14 +5,19 @@ from db import User, Order
 from db.models.model import Product, Cart, OrderItems
 
 
-async def product_detail(product):
+async def product_detail(product, user):
+    if user.idora_turi == "Restoran":
+        price = product.restoran_price
+    else:
+        price = product.optom_price
     text = html_decoration.bold(f'''   
-Nomi: {product.title}
-Narxi: {product.price} so'm
-Turi: {product.type}
-Qo'shimcha: {product.description}
+{product.title}
+
+{product.description}
+
+{product.type} - {price} so'm
 ''')
-    return text, product.photo
+    return text, product.photo, price
 
 
 async def order_detail(order):
@@ -23,10 +28,14 @@ async def order_detail(order):
     total = 0
     for i in order_items:
         product = await Product.get(int(i.product_id))
+        if user.idora_turi == "Restoran":
+            price = product.restoran_price
+        else:
+            price = product.optom_price
         kg = i.count if product.type == 'kg' else int(i.count)
-        text += f"{count}. {product.title}: {kg} X {product.price} = {int(product.price * kg)} so'm\n"
+        text += f"{count}. {product.title}: {kg} X {price} = {int(price * kg)} so'm\n"
         count += 1
-        total += int(product.price * kg)
+        total += int(price * kg)
     text += f'''
 Ism-familiya: {user.full_name}
 Idora: {user.idora}
@@ -46,20 +55,25 @@ async def order_from_user(order):
     count = 1
     for i in order_items:
         product = await Product.get(int(i.product_id))
+        if user.idora_turi == "Restoran":
+            price = product.restoran_price
+        else:
+            price = product.optom_price
         kg = i.count if product.type == 'kg' else int(i.count)
-        text += f"{count}. {product.title}: {kg} X {product.price} = {int(product.price * kg)} so'm\n"
+        text += f"{count}. {product.title}: {kg} X {price} = {int(price * kg)} so'm\n"
         count += 1
     if order.payment == True:
-        payment = "to'landi"
+        payment = "✅"
     else:
-        payment = "to'lanmadi"
-        text += f'''
+        payment = "❌"
+    text += f'''
+Jami: {order.total}    
 Ism-familiya: {user.full_name}
 Idora: {user.idora}
 To'lov: {payment}
+
 Qarz: {order.debt}
 
-Jami: {order.total}    
 '''
     return text
 
@@ -80,14 +94,18 @@ Jami: {order.total}
     return text, user.long, user.lat
 
 
-async def cart(user_id):
-    carts: list['Cart'] = await Cart.get_cart_in_user(user_id)
+async def cart(user_id, carts):
+    user = await User.get(user_id)
     count = 1
     text = html.bold('Mahsulotlar:\n\n')
     for i in carts:
         product: Product = await Product.get(int(i.product_id))
+        if user.idora_turi == "Restoran":
+            price = product.restoran_price
+        else:
+            price = product.optom_price
         kg = i.count if product.type == 'kg' else int(i.count)
-        text += f"{html.bold(count)}. {product.title}: {kg} X {product.price} = {int(product.price * kg)} so'm\n"
+        text += f"{html.bold(count)}. {product.title}: {kg} X {price} = {int(price * kg)} so'm\n"
         count += 1
     return text
 

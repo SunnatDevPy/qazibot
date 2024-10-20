@@ -1,61 +1,64 @@
-from aiogram import Router, F, Bot
+from aiogram import Router, F, Bot, html
+from aiogram.enums import ChatType
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove, Chat
 
-from bot.buttuns.inline import confirm_register_inl, permission_user
+from bot.buttuns.inline import confirm_register_inl, permission_user, change_type_office
 from bot.buttuns.simple import get_contact, get_location, menu_button
 from bot.detail_text import register_detail
 from config import BOT
 from db import User
-from state.states import Register
+from state.states import Register, ChangeTypeState
 
 start_router = Router()
 
 
 @start_router.message(CommandStart())
 async def command_start(message: Message, state: FSMContext):
-    user = await User.get(message.from_user.id)
-    if not user:
-        await message.answer("Ro'yxatdan o'ting")
-        await state.set_state(Register.full_name)
-        await message.answer("Ism familiyangizni kiriting")
+    if message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
+        await message.answer("Menu yopiq", reply_markup=ReplyKeyboardRemove())
     else:
-        if message.from_user.id in [279361769, 5649321700] + [i for i in await User.get_admins()]:
-            await message.answer(f'Xush kelibsiz Admin {message.from_user.first_name}',
-                                 reply_markup=menu_button(admin=True))
+        user = await User.get(message.from_user.id)
+        if not user:
+            await state.set_state(Register.full_name)
+            await message.answer(html.bold("Ro'yxatdan o'ting\nIsm familiyangizni kiriting"), parse_mode="HTML")
         else:
-            await message.answer(f'Xush kelibsiz {message.from_user.first_name}',
-                                 reply_markup=menu_button(admin=False))
-
-
-# @start_router.message(F.chat.type.in_['group', 'supergroup'])
-# async def command_start(message: Message):
-#     await message.answer("Sizda huquq yo'q", reply_markup=ReplyKeyboardRemove())
+            if message.from_user.id in [279361769, 5649321700] + [i for i in await User.get_admins()]:
+                await message.answer(f'Xush kelibsiz Admin {message.from_user.first_name}',
+                                     reply_markup=menu_button(admin=True))
+            else:
+                await message.answer(f'Xush kelibsiz {message.from_user.first_name}',
+                                     reply_markup=menu_button(admin=False))
 
 
 @start_router.message(Register.full_name)
 async def register_full_name(msg: Message, state: FSMContext):
     await state.update_data(full_name=msg.text)
     await state.set_state(Register.contact)
-    await msg.answer("📞Contact yuboring📞", reply_markup=get_contact())
+    await msg.answer(html.bold("Contact yuboring yoki qo'lda kiriting!"), reply_markup=get_contact(), parse_mode="HTML")
 
 
 @start_router.message(Register.contact)
 async def register_full_name(msg: Message, state: FSMContext):
+    await state.set_state(Register.idora)
     if msg.contact:
         await state.update_data(contact=msg.contact.phone_number)
-        await state.set_state(Register.idora)
-        await msg.answer("Idora nomini kiriting", reply_markup=ReplyKeyboardRemove())
+        await msg.answer(html.bold("Idora nomini kiriting"), reply_markup=ReplyKeyboardRemove(), parse_mode="HTML")
     else:
-        await msg.answer("Contact yubormadingiz, pastgi tugamni bosing", reply_markup=get_contact())
+        try:
+            contact = int(msg.text[1:])
+            await state.update_data(contact=msg.text)
+            await msg.answer(html.bold("Idora nomini kiriting"), reply_markup=ReplyKeyboardRemove(), parse_mode="HTML")
+        except:
+            await msg.answer(html.bold("Telefon raqamni tog'ri kiriting"), parse_mode="HTML")
 
 
 @start_router.message(Register.idora)
 async def register_full_name(message: Message, state: FSMContext):
     await state.update_data(idora=message.text)
     await state.set_state(Register.location)
-    await message.answer("📍Locatsiya yuboring📍", reply_markup=get_location())
+    await message.answer(html.bold("📍Locatsiya yuboring📍"), reply_markup=get_location(), parse_mode="HTML")
 
 
 @start_router.message(Register.location)
@@ -64,11 +67,11 @@ async def register_full_name(msg: Message, state: FSMContext):
         await state.update_data(long=msg.location.longitude, lat=msg.location.latitude)
         await state.set_state(Register.confirm)
         data = await state.get_data()
-        await msg.answer("Ma'lumotingiz to'g'rimi?", reply_markup=ReplyKeyboardRemove())
+        await msg.answer(html.bold("Ma'lumotingiz to'g'rimi?"), reply_markup=ReplyKeyboardRemove(), parse_mode="HTML")
         await msg.answer(register_detail(msg, data), parse_mode='HTML',
                          reply_markup=confirm_register_inl())
     else:
-        await msg.answer("Iltimos locatsiya jo'nating")
+        await msg.answer(html.bold("Iltimos locatsiya jo'nating"), parse_mode="HTML")
 
 
 @start_router.callback_query(Register.confirm, F.data.endswith('_register'))
@@ -95,8 +98,9 @@ async def register_full_name(call: CallbackQuery, state: FSMContext):
             await call.message.answer(f'Xush kelibsiz Admin {call.from_user.first_name}',
                                       reply_markup=menu_button(admin=True))
         else:
-            await call.message.answer("Ro'yxatdan o'tdingiz, tez orada adminlarimiz permission berishadi!",
-                                      parse_mode='HTML')
+            await call.message.answer(
+                html.bold("Ro'yxatdan o'tdingiz, tez orada adminlarimiz botni ishlatishga ruxsat berishadi!"),
+                parse_mode='HTML')
         await state.clear()
     else:
         await state.set_state(Register.full_name)
@@ -104,15 +108,27 @@ async def register_full_name(call: CallbackQuery, state: FSMContext):
 
 
 @start_router.callback_query(F.data.startswith('permission_'))
-async def register_full_name(call: CallbackQuery, bot: Bot):
+async def register_full_name(call: CallbackQuery, state: FSMContext, bot: Bot):
     data = call.data.split('_')
-    await call.message.delete()
+    await state.set_state(ChangeTypeState.permission)
     if data[1] == 'confirm':
         await call.message.answer("Ruxsat berildi")
-        await bot.send_message(data[-1], 'Xush kelibsiz, bot ishlatishga ruxsat berildi',
-                               reply_markup=menu_button(admin=False))
+        await call.message.edit_reply_markup(reply_markup=await change_type_office(int(data[-1])))
     else:
+        await call.message.delete()
         try:
             await User.delete(int(data[-1]))
         except:
             await call.message.answer("O'chirishda xatolik")
+
+
+@start_router.callback_query(F.data.startswith('type_'))
+async def register_full_name(call: CallbackQuery, bot: Bot, state: FSMContext):
+    data = call.data.split('_')
+    await call.message.delete()
+    await bot.send_message(data[-1], 'Xush kelibsiz, bot ishlatishga ruxsat berildi',
+                           reply_markup=menu_button(admin=False))
+    await User.update(data[-1], idora_turi=data[1])
+    if call.from_user.id in [5649321700, 279361769] + [i for i in await User.get_admins()]:
+        await call.message.answer(f'Bosh menu {call.from_user.first_name}',
+                                  reply_markup=menu_button(admin=True))

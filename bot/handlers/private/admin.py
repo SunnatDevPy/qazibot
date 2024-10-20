@@ -31,7 +31,7 @@ async def count_book(message: Message, state: FSMContext):
         elif text == 'mahsulot':
             await message.answer("Mahxulotga tegishli excel fayl yuboring!", reply_markup=cancel_excel())
             await message.answer(
-                "Qatorlar ketma ketligi: \n1) id[1-10000], \n2) category_id[1-1000], \n3) photo[link] bo'lmasa bosh qoldiring, \n4) title[salom], \n5) price[12000], \n6) type[dona/kg],\n7) description[zo'r mahsulot]: qo'shimcha malumot!")
+                "Qatorlar ketma ketligi: \n1) id[1-10000], \n2) category_id[1-1000], \n3) photo[link] bo'lmasa bosh qoldiring, \n4) title[salom], \n5) restorn_price[12000],\n6) optom_price[12000], \n7) type[dona/kg],\n8) description[zo'r mahsulot]: qo'shimcha ma'lumot!")
     else:
         await message.answer(f"Sizda huquq yo'q")
 
@@ -57,12 +57,14 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
                 if row.get('category_id'):
                     try:
                         await Product.create(id=row['id'], category_id=row['category_id'], photo=row['photo'],
-                                             title=row['title'], price=row["price"], type=row['type'],
+                                             title=row['title'], restoran_price=row["restoran_price"],
+                                             optom_price=row["optom_price"], type=row['type'],
                                              description=row['description'])
                     except:
                         await Product.create(id=row['id'], category_id=row['category_id'], photo=None,
                                              title=row['title'], price=row["price"], type=row['type'],
-                                             description=row['description'])
+                                             description=row['description'], restoran_price=row["restoran_price"],
+                                             optom_price=row["optom_price"], )
                 else:
                     await Categorie.create(id=row['id'], title=row['title'])
             except:
