@@ -118,7 +118,7 @@ async def settings(message: Message, state: FSMContext, bot: Bot):
                                            f"Umumiy summadan: {summa} ayrildi,\nShuncha qarziz qoldi: {debt}"),
                                        parse_mode="HTML")
         else:
-            await message.answer(f"{total} Umumiy summadan ko'p kiritidngiz! {summa} ")
+            await message.answer(f"{total} Umumiy summadan ko'p kiritidngiz! {summa} ", reply_markup=admin_panel())
     else:
-        await message.answer("Iltimos son kiriting")
+        await message.answer("Iltimos son kiriting", reply_markup=admin_panel())
     await state.clear()
