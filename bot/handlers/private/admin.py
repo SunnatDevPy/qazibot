@@ -2,7 +2,7 @@ import pandas as pd
 from aiogram import Router, html, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 
 from bot.buttuns.inline import admins
 from bot.buttuns.simple import cancel_excel, admin_panel
@@ -31,7 +31,7 @@ async def count_book(message: Message, state: FSMContext):
         elif text == 'mahsulot':
             await message.answer("Mahxulotga tegishli excel fayl yuboring!", reply_markup=cancel_excel())
             await message.answer(
-                "Qatorlar ketma ketligi: \n1) id[1-10000], \n2) category_id[1-1000], \n3) photo[link] bo'lmasa bosh qoldiring, \n4) title[salom], \n5) restorn_price[12000],\n6) optom_price[12000], \n7) type[dona/kg],\n8) description[zo'r mahsulot]: qo'shimcha ma'lumot!")
+                "Qatorlar ketma ketligi: \n1) id[1-10000], \n2) category_id[1-1000], \n3) photo[link] bo'lmasa bosh qoldiring, \n4) title[salom], \n5) restoran_price[12000],\n6) optom_price[12000], \n7) type[dona/kg],\n8) description[zo'r mahsulot]: qo'shimcha ma'lumot!")
     else:
         await message.answer(f"Sizda huquq yo'q")
 
@@ -51,30 +51,31 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
         df = pd.read_excel('data.xlsx')
         text = ''
         brak = 0
-        await message.answer("Bir oz kuting...")
+        await message.answer("Bir oz kuting...", reply_markup=ReplyKeyboardRemove())
         for index, row in df.iterrows():
-            try:
-                if row.get('category_id'):
-                    try:
-                        await Product.create(id=row['id'], category_id=row['category_id'], photo=row['photo'],
-                                             title=row['title'], restoran_price=row["restoran_price"],
-                                             optom_price=row["optom_price"], type=row['type'],
-                                             description=row['description'])
-                    except:
-                        await Product.create(id=row['id'], category_id=row['category_id'], photo=None,
-                                             title=row['title'], price=row["price"], type=row['type'],
-                                             description=row['description'], restoran_price=row["restoran_price"],
-                                             optom_price=row["optom_price"], )
-                else:
-                    await Categorie.create(id=row['id'], title=row['title'])
-            except:
+            print(row)
+
+            if row.get('category_id'):
+                try:
+                    await Product.create(id=row['id'], category_id=row['category_id'], photo=row['photo'],
+                                         title=row['title'], restoran_price=row["restoran_price"],
+                                         optom_price=row["optom_price"], type=row['type'],
+                                         description=row['description'])
+                except:
+                    await Product.create(id=row['id'], category_id=row['category_id'], photo=None,
+                                         title=row['title'], type=row['type'],
+                                         description=row['description'], restoran_price=row["restoran_price"],
+                                         optom_price=row["optom_price"], )
+            else:
+                await Categorie.create(id=row['id'], title=row['title'])
+
                 brak += 1
                 text += f'{row["id"]}, '
         else:
             if brak != 0:
-                await message.answer(text + "idlar zaynit")
+                await message.answer(text + "idlar zaynit", reply_markup=admin_panel())
             else:
-                await message.answer("Muvoffaqiyatli yuklandi")
+                await message.answer("Muvoffaqiyatli yuklandi", reply_markup=admin_panel())
         await state.clear()
 
 
