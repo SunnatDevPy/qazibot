@@ -2,7 +2,7 @@ from aiogram import Router, F, Bot, html
 from aiogram.enums import ChatType
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove, Chat
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 
 from bot.buttuns.inline import confirm_register_inl, permission_user, change_type_office
 from bot.buttuns.simple import get_contact, get_location, menu_button
@@ -112,6 +112,7 @@ async def register_full_name(call: CallbackQuery, state: FSMContext, bot: Bot):
     data = call.data.split('_')
     await state.set_state(ChangeTypeState.permission)
     if data[1] == 'confirm':
+        await User.update(int(data[-1]), permission=True)
         await call.message.answer("Ruxsat berildi")
         await call.message.edit_reply_markup(reply_markup=await change_type_office(int(data[-1])))
     else:
@@ -128,7 +129,7 @@ async def register_full_name(call: CallbackQuery, bot: Bot, state: FSMContext):
     await call.message.delete()
     await bot.send_message(data[-1], 'Xush kelibsiz, bot ishlatishga ruxsat berildi',
                            reply_markup=menu_button(admin=False))
-    await User.update(data[-1], idora_turi=data[1])
+    await User.update(int(data[-1]), idora_turi=data[1])
     if call.from_user.id in [5649321700, 279361769] + [i for i in await User.get_admins()]:
         await call.message.answer(f'Bosh menu {call.from_user.first_name}',
                                   reply_markup=menu_button(admin=True))

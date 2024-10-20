@@ -1,7 +1,7 @@
 from aiogram import Router, F, html, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, maybe_inaccessible_message, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardRemove
 
 from bot.buttuns.simple import debt_check, menu_button, admin_panel
 from bot.detail_text import order_from_user

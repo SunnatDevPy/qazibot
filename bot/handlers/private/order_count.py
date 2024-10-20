@@ -75,7 +75,4 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     await bot.send_message(-1002455618820, text[0], reply_markup=await confirm_order_in_group(order.id))
     await state.clear()
 
-
-
-
 # -1002455618820 -> Order group

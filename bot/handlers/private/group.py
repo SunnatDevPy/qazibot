@@ -1,12 +1,16 @@
 from aiogram import Router, F, Bot
-from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery
 
-from bot.buttuns.inline import change_order_in_group
-from bot.detail_text import detail_text_order, order_detail
-from db import OrderItems, Order, Product
+from bot.detail_text import detail_text_order
+from db import Order
 
 group_router = Router()
+
+
+class ChangeOrderState(StatesGroup):
+    sum = State()
+    count = State()
 
 
 @group_router.callback_query(F.data.startswith("group_"))
@@ -14,9 +18,8 @@ async def group_handler(call: CallbackQuery, bot: Bot):
     data = call.data.split('_')
     await call.answer()
     if data[1] == 'change':
-        order_text = await order_detail(int(data[-1]))
-        await call.message.edit_text(order_text[0],
-                                     reply_markup=await change_order_in_group(int(data[-1])))
+        await call.message.answer("Summa kiriting")
+        pass
     elif data[1] == 'confirm':
         await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                             reply_markup=None)
@@ -29,21 +32,11 @@ async def group_handler(call: CallbackQuery, bot: Bot):
 # order_detail()
 
 @group_router.callback_query(F.data.startswith("change_group"))
-async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
+async def group_handler(call: CallbackQuery, bot: Bot):
     data = call.data.split('_')
     await call.answer()
     if data[2] == 'delete':
-        order_item = await OrderItems.get(int(data[-1]))
-        orderItems = await OrderItems.get_order_items(order_item.order_id)
-        if len(orderItems) != 1:
-            await OrderItems.delete(int(data[-1]))
-            product = await Product.get(order_item.product_id)
-            orders = await Order.get(order_item.order_id)
-            text = await order_detail(orders)
-            await Order.update(orders.id, total=orders.total - product.price)
-            await call.message.edit_text(text[0], reply_markup=await change_order_in_group(int(orders.id)))
-        else:
-            await call.message.answer("Yagon buyurtmani o'chirolmaysiz!")
+        pass
     elif data[2] == 'deleteorder':
         await call.message.delete()
         print(data[-1])

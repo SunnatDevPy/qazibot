@@ -1,11 +1,10 @@
-from aiogram import Router, F, Bot, html
+from aiogram import Router, F, html
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from bot.buttuns.inline import inl_categories, inl_products
 from bot.buttuns.simple import menu_button, cart_from_users
 from db import User
-from db.models.model import Cart
 
 categories_router = Router()
 
@@ -21,7 +20,6 @@ async def settings(message: Message):
 
 @categories_router.message(F.text == "⬅️Ortga")
 async def settings(message: Message):
-    carts = await Cart.get_orders_count(message.from_user.id)
     await message.answer("⬅️Ortga", reply_markup=cart_from_users())
     await message.answer(html.bold('Kategoriyalardan birini tanlang!'), parse_mode="HTML",
                          reply_markup=await inl_categories())
@@ -29,9 +27,8 @@ async def settings(message: Message):
 
 @categories_router.message(F.text == '📖 Menu 📖')
 async def categories_handler(message: Message):
-    carts = await Cart.get_from_user(message.from_user.id)
     await message.answer("Menu", reply_markup=cart_from_users())
-    await message.answer(html.bold('Kategorialardan birini tanlang: '), reply_markup=await inl_categories(),
+    await message.answer(html.bold('Kategoriyalardan birini tanlang: '), reply_markup=await inl_categories(),
                          parse_mode="HTML")
 
 

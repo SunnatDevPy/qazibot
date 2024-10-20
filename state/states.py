@@ -32,11 +32,6 @@ class ProductOrderState(StatesGroup):
     confirm = State()
 
 
-class ChangeOrderState(StatesGroup):
-    product_id = State()
-    count = State()
-
-
 class ChangeTypeState(StatesGroup):
     permission = State()
     type = State()
