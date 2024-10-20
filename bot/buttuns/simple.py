@@ -56,7 +56,7 @@ def change_user_btn():
     return kb.as_markup(resize_keyboard=True)
 
 
-def cart_from_users(order=0):
+def cart_from_users():
     kb = ReplyKeyboardBuilder()
     kb.add(*[KeyboardButton(text=f"🛒Savat"), KeyboardButton(text="◀️Ortga")])
     return kb.as_markup(resize_keyboard=True)

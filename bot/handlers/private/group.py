@@ -22,8 +22,8 @@ async def group_handler(call: CallbackQuery, bot: Bot):
                                             reply_markup=None)
         await call.message.answer("Buyurtma qabul qilindi")
         order_text = await detail_text_order(int(data[-1]))
-        await bot.send_message(-4563771246, order_text[0], parse_mode='HTML')
-        await bot.send_location(-4563771246, order_text[-1], order_text[1])
+        send_message = await bot.send_message(-4563771246, order_text[0], parse_mode='HTML')
+        await bot.send_location(-4563771246, order_text[-1], order_text[1], reply_to_message_id=send_message.message_id)
 
 
 # order_detail()
