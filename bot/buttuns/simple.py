@@ -27,12 +27,23 @@ def admin_panel():
         KeyboardButton(text="To'lanmagan buyurtmalar"),
         KeyboardButton(text="Id bo'yicha buyurtma"),
         KeyboardButton(text="Qarzini yopish"),
-        KeyboardButton(text="Excel kategoriya"),
-        KeyboardButton(text="Excel mahsulot"),
+        KeyboardButton(text="Excel"),
         KeyboardButton(text="Reklama"),
         KeyboardButton(text="◀️Ortga")
     ])
     kb.adjust(2, 2)
+    return kb.as_markup(resize_keyboard=True)
+
+
+def excel():
+    kb = ReplyKeyboardBuilder()
+    kb.add(*[
+        KeyboardButton(text="Kategoriya kiritish"),
+        KeyboardButton(text="Mahsulot kiritish"),
+        KeyboardButton(text="Mahsulot o'zgartirish"),
+        KeyboardButton(text="◀️Ortga")
+    ])
+    kb.adjust(2, 1, 1)
     return kb.as_markup(resize_keyboard=True)
 
 

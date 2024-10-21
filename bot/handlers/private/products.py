@@ -62,10 +62,11 @@ async def book_callback(call: CallbackQuery, state: FSMContext):
 @product_router.message(ProductOrderState.count)
 async def book_callback(msg: Message, state: FSMContext):
     data = await state.get_data()
+    product = await Product.get(int(data.get("product_id")))
     if msg.text == '⬅️Ortga':
         await state.clear()
         await msg.answer(html.bold("Mahsulotni tanlang: "),
-                         reply_markup=await inl_products(int(data.get("category_id"))),
+                         reply_markup=await inl_products(product.category_id),
                          parse_mode="HTML")
     else:
         product_in_cart = await Cart.get_product_in_cart(msg.from_user.id, int(data.get("product_id")))
@@ -83,7 +84,7 @@ async def book_callback(msg: Message, state: FSMContext):
                 f"Savatga qo'shildi: {data.get('product_name')}\n\nBuyurtma qilish uchun savatga o'ting!",
                 reply_markup=cart_from_users())
             await msg.answer(html.bold("Mahsulotni tanlang: "),
-                             reply_markup=await inl_products(int(data.get("category_id"))),
+                             reply_markup=await inl_products(product.category_id),
                              parse_mode="HTML")
             await state.clear()
         except:

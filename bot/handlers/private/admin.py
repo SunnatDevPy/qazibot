@@ -5,7 +5,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 
 from bot.buttuns.inline import admins
-from bot.buttuns.simple import cancel_excel, admin_panel
+from bot.buttuns.simple import cancel_excel, admin_panel, excel
 from db import User, Categorie, Product
 
 admin_router = Router()
@@ -20,18 +20,26 @@ class ExcelImportState(StatesGroup):
 
 
 @admin_router.message(F.text.startswith("Excel"))
+async def count_book(message: Message):
+    await message.answer("Tanlang", reply_markup=excel())
+
+
+@admin_router.message(F.text.in_(["Kategoriya kiritish", "Mahsulot kiritish", "Mahsulot o'zgartirish"]))
 async def count_book(message: Message, state: FSMContext):
-    text = message.text.replace("Excel ", '')
-    print(text)
+    text = message.text
+    await message.answer("Tanlang", reply_markup=excel())
     if message.from_user.id in [5649321700, 279361769] + [i for i in await User.get_admins()]:
         await state.set_state(ExcelImportState.file_id)
-        if text == 'kategoriya':
+        if text == "Kategoriya kiritish":
             await message.answer("Kategoriyaga tegishli excel fayl yuboring!", reply_markup=cancel_excel())
             await message.answer("Qatorlar ketma ketligi: \n1) id[1-9], \n2) title[salom, world]!")
-        elif text == 'mahsulot':
+        elif text == "Mahsulot kiritish":
             await message.answer("Mahxulotga tegishli excel fayl yuboring!", reply_markup=cancel_excel())
             await message.answer(
                 "Qatorlar ketma ketligi: \n1) id[1-10000], \n2) category_id[1-1000], \n3) photo[link] bo'lmasa bosh qoldiring, \n4) title[salom], \n5) restoran_price[12000],\n6) optom_price[12000], \n7) type[dona/kg],\n8) description[zo'r mahsulot]: qo'shimcha ma'lumot!")
+        elif text == "Mahsulot o'zgartirish":
+            await state.update_data(excel=text)
+            await message.answer("Mahxulotga tegishli excel fayl yuboring!", reply_markup=cancel_excel())
     else:
         await message.answer(f"Sizda huquq yo'q")
 
@@ -42,6 +50,7 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
         await state.clear()
         await message.answer("Admin panel", reply_markup=admin_panel())
     else:
+        data = await state.get_data()
         file_info = await bot.get_file(message.document.file_id)
 
         file_path = file_info.file_path
@@ -57,15 +66,28 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
 
             if row.get('category_id'):
                 try:
-                    await Product.create(id=row['id'], category_id=row['category_id'], photo=row['photo'],
-                                         title=row['title'], restoran_price=row["restoran_price"],
-                                         optom_price=row["optom_price"], type=row['type'],
-                                         description=row['description'])
+                    if data.get('excel'):
+                        await Product.update(row['id'], category_id=row['category_id'], photo=row['photo'],
+                                             title=row['title'], restoran_price=row["restoran_price"],
+                                             optom_price=row["optom_price"], type=row['type'],
+                                             description=row['description'])
+                    else:
+                        await Product.create(id=row['id'], category_id=row['category_id'], photo=row['photo'],
+                                             title=row['title'], restoran_price=row["restoran_price"],
+                                             optom_price=row["optom_price"], type=row['type'],
+                                             description=row['description'])
                 except:
-                    await Product.create(id=row['id'], category_id=row['category_id'], photo=None,
-                                         title=row['title'], type=row['type'],
-                                         description=row['description'], restoran_price=row["restoran_price"],
-                                         optom_price=row["optom_price"], )
+                    if data.get('excel'):
+                        await Product.update(row['id'], category_id=row['category_id'], photo=None,
+                                             title=row['title'], restoran_price=row["restoran_price"],
+                                             optom_price=row["optom_price"], type=row['type'],
+                                             description=row['description'])
+                    else:
+                        await Product.create(id=row['id'], category_id=row['category_id'], photo=None,
+                                             title=row['title'], type=row['type'],
+                                             description=row['description'], restoran_price=row["restoran_price"],
+                                             optom_price=row["optom_price"], )
+
             else:
                 await Categorie.create(id=row['id'], title=row['title'])
 
