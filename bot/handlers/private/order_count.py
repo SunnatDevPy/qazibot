@@ -32,7 +32,8 @@ async def group_handler(call: CallbackQuery, bot: Bot):
         await Cart.delete(int(data[-1]))
         if len(carts) == 1:
             await call.message.delete()
-            await call.message.answer(html.bold("Savatda mahsulot qolmadi!"), parse_mode="HTML")
+            await call.message.answer(html.bold("Savatda mahsulot qolmadi!"), parse_mode="HTML",
+                                      reply_markup=menu_button(admin=False))
         else:
             await call.message.edit_reply_markup(call.inline_message_id,
                                                  reply_markup=await change_order_in_group(carts), parse_mode="HTML")
