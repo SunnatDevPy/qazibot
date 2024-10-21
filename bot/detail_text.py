@@ -23,7 +23,7 @@ async def product_detail(product, user):
 async def order_detail(order):
     order_items = await OrderItems.get_order_items(order.id)
     user: User = await User.get(order.user_id)
-    text = f'Buyurtma soni: {order.id}\n\n'
+    text = f'<b>Buyurtma soni</b>: {order.id}\nBuyurtma qilingan sana: {order.created_at.split(".")[0]}\n\n'
     count = 1
     for i in order_items:
         product = await Product.get(int(i.product_id))
@@ -35,13 +35,15 @@ async def order_detail(order):
         text += f"{count}. {product.title}: {kg} X {price} = {int(price * kg)} so'm\n"
         count += 1
     text += f'''
-Ism-familiya: {user.full_name}
-Idora: {user.idora}
-Raqam: {user.contact}
-To'lash turi: {order.debt_type}
-Yetkazish: {order.delivery}
-Vaqt: {order.time}
-Jami: {order.total}    
+<b>Buyurtmachi</b>: {user.full_name}
+<b>Idora</b>: {user.idora}
+<b>Raqam</b>: {user.contact}
+<b>Izoh</b>: {order.time}
+
+<b>To'lash turi</b>: {order.debt_type}
+<b>Yetkazish</b>: {order.delivery}
+
+<b>Jami</b>: {order.total}    
 '''
     return text, user.long, user.lat
 
@@ -49,7 +51,7 @@ Jami: {order.total}
 async def order_from_user(order):
     order_items = await OrderItems.get_order_items(order.id)
     user: User = await User.get(order.user_id)
-    text = f'Buyurtma soni: {order.id}\n\n'
+    text = f'Buyurtma soni: {order.id}\nBuyurtma qilingan sana: {order.created_at.split(".")[0]}\n\n'
     count = 1
     for i in order_items:
         product = await Product.get(int(i.product_id))
@@ -70,6 +72,8 @@ Ism-familiya: {user.full_name}
 Idora: {user.idora}
 To'lov: {payment}
 
+Izoh: {order.time}
+
 Qarz: {order.debt}
 
 '''
@@ -80,7 +84,8 @@ async def detail_text_order(order_id):
     order = await Order.get(order_id)
     user: User = await User.get(order.user_id)
     text = f'''
-Buyurtma soni: {order.id}   
+Buyurtma soni: {order.id}  
+Buyurtma qilingan sana: {order.created_at.split(".")[0]} 
     
 Ism-familiya: {user.full_name}
 Idora: {user.idora}

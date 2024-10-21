@@ -81,7 +81,7 @@ async def count_book(message: Message):
 async def count_book(message: Message, state: FSMContext):
     about = await About.get_all()
     if about:
-        await message.answer(about[0])
+        await message.answer(about[0].text, parse_mode="HTML")
     else:
         await message.answer("Malumot yo'q")
 

@@ -46,7 +46,7 @@ async def group_handler(message: Message, bot: Bot, state: FSMContext):
         await Order.update(int(data.get('order_id_in_group')), debt=summa, total=summa)
         order = await Order.get(int(data.get('order_id_in_group')))
         text = await order_detail(order)
-        await message.answer(text[0], reply_markup=await confirm_order_in_group(order.id))
+        await message.answer(text[0], reply_markup=await confirm_order_in_group(order.id), parse_mode="HTML")
         await state.clear()
     else:
         await message.answer("Iltimos son kiriting")

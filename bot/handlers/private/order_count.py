@@ -16,8 +16,8 @@ async def settings(message: Message):
     carts = await Cart.get_cart_in_user(message.from_user.id)
     if carts:
         text = await cart(message.from_user.id, carts)
-        await message.answer(text, parse_mode="HTML", reply_markup=await change_order_in_group(carts))
         await message.answer("Savat menu", parse_mode="HTML", reply_markup=cart_detail_btn())
+        await message.answer(text, parse_mode="HTML", reply_markup=await change_order_in_group(carts))
     else:
         await message.answer(html.bold("Savatingiz bo'sh!"), parse_mode="HTML")
 
@@ -35,8 +35,9 @@ async def group_handler(call: CallbackQuery, bot: Bot):
             await call.message.answer(html.bold("Savatda mahsulot qolmadi!"), parse_mode="HTML",
                                       reply_markup=menu_button(admin=False))
         else:
-            await call.message.edit_reply_markup(call.inline_message_id,
-                                                 reply_markup=await change_order_in_group(carts), parse_mode="HTML")
+            await call.message.delete()
+            carts = await Cart.get_cart_in_user(call.from_user.id)
+            await call.message.answer(text, reply_markup=await change_order_in_group(carts), parse_mode="HTML")
 
 
 @order_router.message(F.text.startswith('✅ Buyurtma qilish'))
@@ -89,7 +90,8 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     if data.get('delivery') == '🏃Olib ketish🏃':
         await message.answer_location(latitude=41.342221, longitude=69.275769)
         await message.answer("Bizning manzil, QaziSay")
-    await bot.send_message(-1002455618820, text[0], reply_markup=await confirm_order_in_group(order.id))
+    await bot.send_message(-1002455618820, text[0], parse_mode="HTML",
+                           reply_markup=await confirm_order_in_group(order.id))
     await state.clear()
 
 # -1002455618820 -> Order group
