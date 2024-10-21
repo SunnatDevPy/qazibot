@@ -87,20 +87,19 @@ async def change_type_office(user_id):
     return ikb.as_markup()
 
 
-async def change_order_in_group(order_id):
+async def change_order_in_group(carts):
     ikb = InlineKeyboardBuilder()
-    order_items: list['OrderItems'] = await OrderItems.get_order_items(int(order_id))
-    for i in order_items:
+    for i in carts:
         product: Product = await Product.get(i.product_id)
+        if product.type == 'dona':
+            count = int(i.count)
+        else:
+            count = float(i.count)
         ikb.add(*[
-            InlineKeyboardButton(text=product.title, callback_data=f'change_group_confirms_{i.id}'),
-            InlineKeyboardButton(text=str(i.count), callback_data=f'change_group_confirms_{i.id}'),
-            InlineKeyboardButton(text="❌", callback_data=f'change_group_delete_{i.id}')
+            InlineKeyboardButton(text=product.title, callback_data=f'change_cart_confirms_{i.id}'),
+            InlineKeyboardButton(text=str(count), callback_data=f'change_cart_confirms_{i.id}'),
+            InlineKeyboardButton(text="❌", callback_data=f'change_cart_delete_{i.id}')
         ])
-    ikb.row(
-        InlineKeyboardButton(text="Qabul qilish", callback_data=f'change_group_confirm_{order_id}'),
-        InlineKeyboardButton(text="❌Otkaz", callback_data=f'change_group_deleteorder_{order_id}'),
-    )
     ikb.adjust(3, repeat=True)
     return ikb.as_markup()
 

@@ -1,8 +1,8 @@
 from aiogram import Router, F, html, Bot
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
-from bot.buttuns.inline import confirm_order_in_group
+from bot.buttuns.inline import confirm_order_in_group, change_order_in_group
 from bot.buttuns.simple import detail_delivery, cart_detail_btn, menu_button, choose_payment
 from bot.detail_text import cart, order_detail
 from db.models.model import Order, Cart, OrderItems
@@ -16,9 +16,25 @@ async def settings(message: Message):
     carts = await Cart.get_cart_in_user(message.from_user.id)
     if carts:
         text = await cart(message.from_user.id, carts)
-        await message.answer(text, parse_mode="HTML", reply_markup=cart_detail_btn())
+        await message.answer(text, parse_mode="HTML", reply_markup=await change_order_in_group(carts))
     else:
         await message.answer(html.bold("Savatingiz bo'sh!"), parse_mode="HTML")
+
+
+@order_router.callback_query(F.data.startswith("change_cart"))
+async def group_handler(call: CallbackQuery, bot: Bot):
+    data = call.data.split('_')
+    await call.answer()
+    carts = await Cart.get_cart_in_user(call.from_user.id)
+    text = await cart(call.from_user.id, carts)
+    if data[2] == 'delete':
+        await Cart.delete(int(data[-1]))
+        if len(carts) == 1:
+            await call.message.delete()
+            await call.message.answer(html.bold("Savatda mahsulot qolmadi!"), parse_mode="HTML")
+        else:
+            await call.message.edit_reply_markup(call.inline_message_id,
+                                                 reply_markup=await change_order_in_group(carts), parse_mode="HTML")
 
 
 @order_router.message(F.text.startswith('✅ Buyurtma qilish'))

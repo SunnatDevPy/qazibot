@@ -96,6 +96,7 @@ async def cart(user_id, carts):
     user = await User.get(user_id)
     count = 1
     text = html.bold('Mahsulotlar:\n\n')
+    total = 0
     for i in carts:
         product: Product = await Product.get(int(i.product_id))
         if user.idora_turi == "Restoran":
@@ -105,6 +106,8 @@ async def cart(user_id, carts):
         kg = i.count if product.type == 'kg' else int(i.count)
         text += f"{html.bold(count)}. {product.title}: {kg} X {price} = {int(price * kg)} so'm\n"
         count += 1
+        total += int(price * kg)
+    text += f'\nJami: {total}'
     return text
 
 
