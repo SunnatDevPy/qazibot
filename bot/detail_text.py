@@ -28,7 +28,7 @@ async def order_detail(order):
     order_items = await OrderItems.get_order_items(order.id)
     user: User = await User.get(order.user_id)
     time = str(order.created_at).split(".")[0]
-    text = f'<b>Buyurtma soni</b>: {order.id}\nBuyurtma qilingan sana: {time}\n\n'
+    text = f'<b>Buyurtma soni</b>: {order.id}\n{time}\n\n'
     count = 1
     for i in order_items:
         product = await Product.get(int(i.product_id))
