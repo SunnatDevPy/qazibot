@@ -70,7 +70,7 @@ async def count_book(message: Message):
         qarz = 0
         for i in owner:
             if i.payment == False:
-                qarz += i.total
+                qarz += i.debt
         else:
             await message.answer(f"Sizning qarzingiz: {qarz} so'm")
     else:
