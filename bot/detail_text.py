@@ -25,7 +25,6 @@ async def order_detail(order):
     user: User = await User.get(order.user_id)
     text = f'Buyurtma soni: {order.id}\n\n'
     count = 1
-    total = 0
     for i in order_items:
         product = await Product.get(int(i.product_id))
         if user.idora_turi == "Restoran":
@@ -35,7 +34,6 @@ async def order_detail(order):
         kg = i.count if product.type == 'kg' else int(i.count)
         text += f"{count}. {product.title}: {kg} X {price} = {int(price * kg)} so'm\n"
         count += 1
-        total += int(price * kg)
     text += f'''
 Ism-familiya: {user.full_name}
 Idora: {user.idora}
@@ -43,7 +41,7 @@ Raqam: {user.contact}
 To'lash turi: {order.debt_type}
 Yetkazish: {order.delivery}
 Vaqt: {order.time}
-Jami: {total}    
+Jami: {order.total}    
 '''
     return text, user.long, user.lat
 

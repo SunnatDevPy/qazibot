@@ -70,7 +70,7 @@ async def inl_categories_group():
 async def confirm_order_in_group(id_):
     ikb = InlineKeyboardBuilder()
     ikb.add(*[
-        InlineKeyboardButton(text="Taxrirlash", callback_data=f'group_change_{id_}'),
+        InlineKeyboardButton(text="O'zgartirish", callback_data=f'group_change_{id_}'),
         InlineKeyboardButton(text="Qabul qilish", callback_data=f'group_confirm_{id_}')
     ])
     ikb.adjust(2)

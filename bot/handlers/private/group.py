@@ -37,7 +37,6 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
 @group_router.message(ChangeOrderState.sum)
 async def group_handler(message: Message, bot: Bot, state: FSMContext):
     data = await state.get_data()
-    await message.delete()
     if message.text.isdigit():
         summa = int(message.text)
         await Order.update(int(data.get('order_id_in_group')), debt=summa, total=summa)

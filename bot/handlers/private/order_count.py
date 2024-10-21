@@ -48,7 +48,6 @@ async def count_book(message: Message, state: FSMContext):
 async def count_book(message: Message, state: FSMContext):
     await state.update_data(time=message.text)
     await state.set_state(ConfirmBasket.debt)
-
     await message.answer("Tanlang", reply_markup=choose_payment())
 
 
