@@ -20,9 +20,11 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
     data = call.data.split('_')
     await call.answer()
     if data[1] == 'change':
+        order = await Order.get(int(data[-1]))
         await state.update_data(order_id_in_group=data[-1])
+        await call.message.delete()
         await state.set_state(ChangeOrderState.sum)
-        await call.message.answer("Summani kiriting", reply_to_message_id=call.message.message_id)
+        await call.message.answer(f"{order.id}) Buyurtmadagi summa: {order.total}\nYangi narx kiriting!")
         await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                             reply_markup=None)
     elif data[1] == 'confirm':
@@ -38,6 +40,7 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
 async def group_handler(message: Message, bot: Bot, state: FSMContext):
     data = await state.get_data()
     if message.text.isdigit():
+        await message.delete()
         summa = int(message.text)
         await Order.update(int(data.get('order_id_in_group')), debt=summa, total=summa)
         order = await Order.get(int(data.get('order_id_in_group')))
