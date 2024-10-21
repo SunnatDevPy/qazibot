@@ -62,8 +62,6 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
         brak = 0
         await message.answer("Bir oz kuting...", reply_markup=ReplyKeyboardRemove())
         for index, row in df.iterrows():
-            print(row)
-
             if row.get('category_id'):
                 try:
                     if data.get('excel'):
@@ -97,7 +95,10 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
             if brak != 0:
                 await message.answer(text + "idlar zaynit", reply_markup=admin_panel())
             else:
-                await message.answer("Muvoffaqiyatli yuklandi", reply_markup=admin_panel())
+                if data.get('excel'):
+                    await message.answer("Muvoffaqiyatli o'zgartirildi", reply_markup=admin_panel())
+                else:
+                    await message.answer("Muvoffaqiyatli yuklandi", reply_markup=admin_panel())
         await state.clear()
 
 
