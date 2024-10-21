@@ -116,10 +116,13 @@ async def delete_admins(call: CallbackQuery, state: FSMContext):
             await call.message.edit_text(html.bold("Adminlar ro'yxati"), parse_mode='HTML', reply_markup=await admins())
         except:
             await call.message.answer('Xatolik yuz berdi')
+    if data[1] == 'back':
+        await call.message.delete()
+        await call.message.answer(html.bold("Admin panel"), parse_mode='HTML', reply_markup=admin_panel())
 
 
 @admin_router.message(AddAdmin.user_id)
-async def add_admin(call: Message):
+async def add_admin(call: Message, state: FSMContext):
     try:
         user = await User.get(int(call.text))
         if user:
@@ -136,3 +139,5 @@ Username: <code>@{user.username}</code>
                               parse_mode='HTML')
     except:
         await call.answer(html.bold("Id kiritmadingiz"), parse_mode='HTML')
+        await call.answer(html.bold("Adminlar ro'yxati"), parse_mode='HTML', reply_markup=await admins())
+    await state.clear()

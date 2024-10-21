@@ -29,7 +29,7 @@ async def admins():
             InlineKeyboardButton(text="❌", callback_data=f'admins_delete_{i.id}')
         ])
     ikb.row(InlineKeyboardButton(text="Admin qo'shish", callback_data="admins_add"))
-    ikb.row(InlineKeyboardButton(text="⬅️Ortga️", callback_data="back_settings"))
+    ikb.row(InlineKeyboardButton(text="⬅️Ortga️", callback_data="admins_back"))
     ikb.adjust(2, repeat=True)
     return ikb.as_markup()
 
@@ -76,6 +76,7 @@ async def confirm_order_in_group(id_):
     ikb.adjust(2)
     return ikb.as_markup()
 
+
 async def change_type_office(user_id):
     ikb = InlineKeyboardBuilder()
     ikb.add(*[
@@ -84,6 +85,7 @@ async def change_type_office(user_id):
     ])
     ikb.adjust(2)
     return ikb.as_markup()
+
 
 async def change_order_in_group(order_id):
     ikb = InlineKeyboardBuilder()
