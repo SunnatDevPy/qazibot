@@ -2,7 +2,11 @@ from aiogram import html
 from aiogram.utils.text_decorations import html_decoration
 
 from db import User, Order
-from db.models.model import Product, Cart, OrderItems
+from db.models.model import Product, OrderItems
+
+
+def change_number(formatted_num):
+    return f'{formatted_num:,}'.replace(',', ' ')
 
 
 async def product_detail(product, user):
@@ -23,7 +27,8 @@ async def product_detail(product, user):
 async def order_detail(order):
     order_items = await OrderItems.get_order_items(order.id)
     user: User = await User.get(order.user_id)
-    text = f'<b>Buyurtma soni</b>: {order.id}\nBuyurtma qilingan sana: {order.created_at.split(".")[0]}\n\n'
+    time = str(order.created_at).split(".")[0]
+    text = f'<b>Buyurtma soni</b>: {order.id}\nBuyurtma qilingan sana: {time}\n\n'
     count = 1
     for i in order_items:
         product = await Product.get(int(i.product_id))
@@ -32,7 +37,7 @@ async def order_detail(order):
         else:
             price = product.optom_price
         kg = i.count if product.type == 'kg' else int(i.count)
-        text += f"{count}. {product.title}: {kg} X {price} = {int(price * kg)} so'm\n"
+        text += f"{count}. {product.title}: {kg} X {change_number(price)} = {change_number(int(price * kg))} so'm\n"
         count += 1
     text += f'''
 <b>Buyurtmachi</b>: {user.full_name}
@@ -43,7 +48,7 @@ async def order_detail(order):
 <b>To'lash turi</b>: {order.debt_type}
 <b>Yetkazish</b>: {order.delivery}
 
-<b>Jami</b>: {order.total}    
+<b>Jami</b>: {change_number(order.total)}    
 '''
     return text, user.long, user.lat
 
@@ -51,7 +56,8 @@ async def order_detail(order):
 async def order_from_user(order):
     order_items = await OrderItems.get_order_items(order.id)
     user: User = await User.get(order.user_id)
-    text = f'Buyurtma soni: {order.id}\nBuyurtma qilingan sana: {order.created_at.split(".")[0]}\n\n'
+    time = str(order.created_at).split(".")[0]
+    text = f'Buyurtma soni: {order.id}\nBuyurtma qilingan sana: {time}\n\n'
     count = 1
     for i in order_items:
         product = await Product.get(int(i.product_id))
@@ -60,7 +66,7 @@ async def order_from_user(order):
         else:
             price = product.optom_price
         kg = i.count if product.type == 'kg' else int(i.count)
-        text += f"{count}. {product.title}: {kg} X {price} = {int(price * kg)} so'm\n"
+        text += f"{count}. {product.title}: {kg} X {change_number(price)} = {change_number(int(price * kg))} so'm\n"
         count += 1
     if order.payment == True:
         payment = "✅"
@@ -71,11 +77,9 @@ Jami: {order.total}
 Ism-familiya: {user.full_name}
 Idora: {user.idora}
 To'lov: {payment}
-
 Izoh: {order.time}
 
-Qarz: {order.debt}
-
+Qarz: {change_number(order.debt)}
 '''
     return text
 
@@ -83,16 +87,17 @@ Qarz: {order.debt}
 async def detail_text_order(order_id):
     order = await Order.get(order_id)
     user: User = await User.get(order.user_id)
+    time = str(order.created_at).split(".")[0]
     text = f'''
 Buyurtma soni: {order.id}  
-Buyurtma qilingan sana: {order.created_at.split(".")[0]} 
+Buyurtma qilingan sana: {time} 
     
 Ism-familiya: {user.full_name}
 Idora: {user.idora}
 Contact: {user.contact}
-Vaqti: {order.time}
+Izox: {order.time}
 To'lov turi: {order.debt_type}
-Jami: {order.total}    
+Jami: {change_number(order.total)}    
 '''
     return text, user.long, user.lat
 
@@ -109,10 +114,10 @@ async def cart(user_id, carts):
         else:
             price = product.optom_price
         kg = i.count if product.type == 'kg' else int(i.count)
-        text += f"{html.bold(count)}. {product.title}: {kg} X {price} = {int(price * kg)} so'm\n"
+        text += f"{html.bold(count)}. {product.title}: {kg} X {change_number(price)} = {change_number(int(price * kg))} so'm\n"
         count += 1
         total += int(price * kg)
-    text += f'\nJami: {total}'
+    text += f'\nJami: {change_number(total)}'
     return text
 
 

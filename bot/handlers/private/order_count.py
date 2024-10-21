@@ -50,8 +50,7 @@ async def count_book(message: Message, state: FSMContext):
 async def count_book(message: Message, state: FSMContext):
     await state.update_data(delivery=message.text)
     await state.set_state(ConfirmBasket.time)
-    await message.answer("Sana va vaqtni kiriting", reply_markup=ReplyKeyboardRemove())
-    await message.answer("Masalan 12.02.2024 16:00", reply_markup=None)
+    await message.answer("Izox qoldiring", reply_markup=ReplyKeyboardRemove())
 
 
 @order_router.message(F.text.startswith('Tozalash'))
