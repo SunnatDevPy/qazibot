@@ -70,23 +70,30 @@ async def book_callback(msg: Message, state: FSMContext):
                          parse_mode="HTML")
     else:
         product_in_cart = await Cart.get_product_in_cart(msg.from_user.id, int(data.get("product_id")))
+
         try:
+            type = data.get('type')
+            text = msg.text.replace(',', '.').strip()
             price = float(msg.text.replace(',', '.').strip())
-            await state.update_data(count=price)
-            if product_in_cart:
-                await Cart.update(product_in_cart.id, count=product_in_cart.count + price,
-                                  total=product_in_cart.total + int(float(data.get('product_price')) * price))
+            if '.' in msg.text and type == "dona":
+                await msg.answer(html.bold(f"Donali mahsulotga notog'ri malumot kiritdingiz!  (1 / 5)"),
+                                 parse_mode="HTML")
             else:
-                await Cart.create(user_id=msg.from_user.id, product_id=data.get("product_id"),
-                                  count=price,
-                                  total=int(data.get('product_price') * price))
-            await msg.answer(
-                f"Savatga qo'shildi: {data.get('product_name')}\n\nBuyurtma qilish uchun savatga o'ting!",
-                reply_markup=cart_from_users())
-            await msg.answer(html.bold("Mahsulotni tanlang: "),
-                             reply_markup=await inl_products(product.category_id),
-                             parse_mode="HTML")
-            await state.clear()
+                await state.update_data(count=price)
+                if product_in_cart:
+                    await Cart.update(product_in_cart.id, count=product_in_cart.count + price,
+                                      total=product_in_cart.total + int(float(data.get('product_price')) * price))
+                else:
+                    await Cart.create(user_id=msg.from_user.id, product_id=data.get("product_id"),
+                                      count=price,
+                                      total=int(data.get('product_price') * price))
+                await msg.answer(
+                    f"Savatga qo'shildi: {data.get('product_name')}\n\nBuyurtma qilish uchun savatga o'ting!",
+                    reply_markup=cart_from_users())
+                await msg.answer(html.bold("Mahsulotni tanlang: "),
+                                 reply_markup=await inl_products(product.category_id),
+                                 parse_mode="HTML")
+                await state.clear()
         except:
             await msg.answer(f"{msg.text} noto'g'ri")
             await msg.answer(f"Boshqa malumot yubordingiz, yoki juda kotta son")
