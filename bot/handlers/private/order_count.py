@@ -17,6 +17,7 @@ async def settings(message: Message):
     if carts:
         text = await cart(message.from_user.id, carts)
         await message.answer(text, parse_mode="HTML", reply_markup=await change_order_in_group(carts))
+        await message.answer("Savat menu", parse_mode="HTML", reply_markup=cart_detail_btn())
     else:
         await message.answer(html.bold("Savatingiz bo'sh!"), parse_mode="HTML")
 
