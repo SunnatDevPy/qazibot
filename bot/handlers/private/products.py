@@ -49,7 +49,7 @@ async def book_callback(call: CallbackQuery, state: FSMContext):
         else:
             type = "kg"
             count = "(1,2 / 30)"
-        await state.update_data(product_id=int(data[-1]), type=type, product_name=product.title, price=text[-1])
+        await state.update_data(product_id=int(data[-1]), type=type, product_name=product.title, product_price=text[-1])
         await state.set_state(ProductOrderState.count)
         await call.message.answer(
             html.bold(
@@ -73,12 +73,12 @@ async def book_callback(msg: Message, state: FSMContext):
             price = float(msg.text.replace(',', '.').strip())
             await state.update_data(count=price)
             if product_in_cart:
-                await Cart.update(product_in_cart.id, count=data.get('price') + price,
-                                  total=product_in_cart.total + int(data.get('price') * price))
+                await Cart.update(product_in_cart.id, count=product_in_cart.count + price,
+                                  total=product_in_cart.total + int(float(data.get('product_price')) * price))
             else:
                 await Cart.create(user_id=msg.from_user.id, product_id=data.get("product_id"),
                                   count=price,
-                                  total=int(data.get('price') * price))
+                                  total=int(data.get('product_price') * price))
             await msg.answer(
                 f"Savatga qo'shildi: {data.get('product_name')}\n\nBuyurtma qilish uchun savatga o'ting!",
                 reply_markup=cart_from_users())
