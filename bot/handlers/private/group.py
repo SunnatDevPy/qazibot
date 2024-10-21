@@ -32,11 +32,11 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
                                             reply_markup=None)
         await call.message.answer("Buyurtma qabul qilindi")
         order_text = await detail_text_order(int(data[-1]))
-        await bot.send_message(-4598743953, order_text[0], parse_mode='HTML')
-        await bot.send_location(-4598743953, order_text[-1], order_text[1])
+        send_message = await bot.send_message(-1002460328299, order_text[0], parse_mode='HTML')
+        await bot.send_location(-1002460328299, order_text[-1], order_text[1], reply_to_message_id=send_message.message_id)
 
 
-# -4598743953 -> yetkazish
+# -1002460328299 -> yetkazish
 @group_router.message(ChangeOrderState.sum)
 async def group_handler(message: Message, bot: Bot, state: FSMContext):
     data = await state.get_data()
