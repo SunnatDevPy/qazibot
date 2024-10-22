@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
 from bot.buttuns.inline import confirm_order_in_group, change_order_in_group
-from bot.buttuns.simple import detail_delivery, cart_detail_btn, menu_button, choose_payment
+from bot.buttuns.simple import detail_delivery, cart_detail_btn, menu_button, choose_payment, otkazish
 from bot.detail_text import cart, order_detail
 from db.models.model import Order, Cart, OrderItems
 from state.states import ConfirmBasket
@@ -11,7 +11,7 @@ from state.states import ConfirmBasket
 order_router = Router()
 
 
-@order_router.message(F.text.startswith("🛒Savat"))
+@order_router.message(F.text.startswith("🛒Savat ("))
 async def settings(message: Message):
     carts = await Cart.get_cart_in_user(message.from_user.id)
     if carts:
@@ -33,7 +33,7 @@ async def group_handler(call: CallbackQuery, bot: Bot):
         if len(carts) == 1:
             await call.message.delete()
             await call.message.answer(html.bold("Savatda mahsulot qolmadi!"), parse_mode="HTML",
-                                      reply_markup=menu_button(admin=False))
+                                      reply_markup=await menu_button(admin=False, user_id=call.from_user.id))
         else:
             await call.message.delete()
             carts = await Cart.get_cart_in_user(call.from_user.id)
@@ -51,22 +51,23 @@ async def count_book(message: Message, state: FSMContext):
 async def count_book(message: Message, state: FSMContext):
     await state.update_data(delivery=message.text)
     await state.set_state(ConfirmBasket.time)
-    await message.answer("Izox qoldiring", reply_markup=ReplyKeyboardRemove())
+    await message.answer("Izox qoldiring", reply_markup=otkazish())
 
 
 @order_router.message(F.text.startswith('Tozalash'))
 async def count_book(message: Message, state: FSMContext):
     try:
         await Cart.delete_carts(message.from_user.id)
-        await message.answer("Savat tozalandi!", reply_markup=menu_button(admin=False))
+        await message.answer("Savat tozalandi!",
+                             reply_markup=await menu_button(admin=False, user_id=message.from_user.id))
     except:
         await message.answer("O'chirishda hatolik")
 
 
 @order_router.message(ConfirmBasket.time)
 async def count_book(message: Message, state: FSMContext):
-    await state.update_data(time=message.text)
     await state.set_state(ConfirmBasket.debt)
+    await state.update_data(time=message.text)
     await message.answer("Tanlang", reply_markup=choose_payment())
 
 
@@ -86,7 +87,7 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     await Order.update(order.id, debt=total, total=total)
     text = await order_detail(order)
     await message.answer("Buyurtmangi qabul qilindi tez orada aloqaga chiqamiz!",
-                         reply_markup=menu_button(admin=False))
+                         reply_markup=await menu_button(admin=False, user_id=message.from_user.id))
     if data.get('delivery') == '🏃Olib ketish🏃':
         await message.answer_location(latitude=41.342221, longitude=69.275769)
         await message.answer("Bizning manzil, QaziSay")

@@ -13,21 +13,21 @@ categories_router = Router()
 async def settings(message: Message):
     if message.from_user.id in [5649321700, 279361769] + [i for i in await User.get_admins()]:
         await message.answer(f'Bosh menu',
-                             reply_markup=menu_button(admin=True))
+                             reply_markup=await menu_button(admin=True, user_id=message.from_user.id))
     else:
-        await message.answer('Bosh menu', reply_markup=menu_button(admin=False))
+        await message.answer('Bosh menu', reply_markup=await menu_button(admin=False, user_id=message.from_user.id))
 
 
 @categories_router.message(F.text == "⬅️Ortga")
 async def settings(message: Message):
-    await message.answer("⬅️Ortga", reply_markup=cart_from_users())
+    await message.answer("⬅️Ortga", reply_markup=await cart_from_users(user_id=message.from_user.id))
     await message.answer(html.bold('Kategoriyalardan birini tanlang!'), parse_mode="HTML",
                          reply_markup=await inl_categories())
 
 
 @categories_router.message(F.text == '📖 Menu 📖')
 async def categories_handler(message: Message):
-    await message.answer("Menu", reply_markup=cart_from_users())
+    await message.answer("Menu", reply_markup=await cart_from_users(user_id=message.from_user.id))
     await message.answer(html.bold('Kategoriyalardan birini tanlang: '), reply_markup=await inl_categories(),
                          parse_mode="HTML")
 
@@ -39,7 +39,8 @@ async def book_callback(call: CallbackQuery, state: FSMContext):
     await state.update_data(category_id=int(detail[-1]))
     if detail[-1] == 'back':
         await call.message.delete()
-        await call.message.answer(html.bold('Kategorialardan birini tanlang: '), reply_markup=menu_button(admin=True),
+        await call.message.answer(html.bold('Kategorialardan birini tanlang: '),
+                                  reply_markup=await menu_button(admin=True, user_id=call.from_user.id),
                                   parse_mode="HTML")
     else:
         await call.message.edit_text(html.bold("Mahsulotni tanlang: "),

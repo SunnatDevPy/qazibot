@@ -130,7 +130,7 @@ async def leagues_handler(call: CallbackQuery, state: FSMContext, bot: Bot):
                     except:
                         block += 1
         await call.message.answer(f'Yuborildi: {send}\nBlockda: {block}')
-        await call.message.answer("Bosh menu", reply_markup=menu_button(admin=True))
+        await call.message.answer("Bosh menu", reply_markup=await menu_button(admin=True, user_id=call.from_user.id))
 
     elif data[0] == 'cancel':
         await call.message.delete()

@@ -1,7 +1,7 @@
 from aiogram import html
 from aiogram.utils.text_decorations import html_decoration
 
-from db import User, Order
+from db import User, Order, Cart
 from db.models.model import Product, OrderItems
 
 
@@ -18,7 +18,7 @@ async def product_detail(product, user):
 <b>{product.title}</b>
 
 {product.description}
-{product.type} - {price} so'm
+{product.type} - {change_number(price)} so'm
 '''
     return text, product.photo, price
 
@@ -38,11 +38,15 @@ async def order_detail(order):
         kg = i.count if product.type == 'kg' else int(i.count)
         text += f"{count}. {product.title}: {kg} X {change_number(price)} = {change_number(int(price * kg))} so'm\n"
         count += 1
+    if order.time == "O'tkazib yuborish":
+        izox = ''
+    else:
+        izox = f"<b>Izoh</b>: {order.time}"
     text += f'''
 <b>Buyurtmachi</b>: {user.full_name}
 <b>Idora</b>: {user.idora}
 <b>Raqam</b>: {user.contact}
-<b>Izoh</b>: {order.time}
+{izox}
 
 <b>To'lash turi</b>: {order.debt_type}
 <b>Yetkazish</b>: {order.delivery}
@@ -67,6 +71,10 @@ async def order_from_user(order):
         kg = i.count if product.type == 'kg' else int(i.count)
         text += f"{count}. {product.title}: {kg} X {change_number(price)} = {change_number(int(price * kg))} so'm\n"
         count += 1
+    if order.time == "O'tkazib yuborish":
+        izox = ''
+    else:
+        izox = f"<b>Izoh</b>: {order.time}"
     if order.payment == True:
         payment = "✅"
     else:
@@ -76,7 +84,7 @@ Jami: {order.total}
 Ism-familiya: {user.full_name}
 Idora: {user.idora}
 To'lov: {payment}
-Izoh: {order.time}
+{izox}
 
 Qarz: {change_number(order.debt)}
 '''
@@ -87,6 +95,10 @@ async def detail_text_order(order_id):
     order = await Order.get(order_id)
     user: User = await User.get(order.user_id)
     time = str(order.created_at).split(".")[0]
+    if order.time == "O'tkazib yuborish":
+        izox = ''
+    else:
+        izox = f"<b>Izoh</b>: {order.time}"
     text = f'''
 Buyurtma soni: {order.id}  
 Buyurtma qilingan sana: {time} 
@@ -94,7 +106,7 @@ Buyurtma qilingan sana: {time}
 Ism-familiya: {user.full_name}
 Idora: {user.idora}
 Contact: {user.contact}
-Izox: {order.time}
+{izox}
 To'lov turi: {order.debt_type}
 Jami: {change_number(order.total)}    
 '''
@@ -133,3 +145,11 @@ Idora: {data.get("idora")}
 Username: @{msg.from_user.username}
 ☎Raqam: {data.get('contact')}
 ''')
+
+
+async def sum_cart(user_id):
+    carts = await Cart.get_cart_in_user(user_id)
+    total = 0
+    for i in carts:
+        total += i.total
+    return total

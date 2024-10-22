@@ -1,21 +1,23 @@
 from aiogram.types import KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
+from bot.detail_text import sum_cart, change_number
 
-def menu_button(admin):
+
+async def menu_button(admin, user_id):
     kb = ReplyKeyboardBuilder()
     kb.add(*[KeyboardButton(text='📖 Menu 📖'),
-             KeyboardButton(text="👤Mening ma'lumotlarim👤"),
              KeyboardButton(text='📃Buyurtmalarim📃'),
-             KeyboardButton(text=f"🛒Savat"),
              KeyboardButton(text='📝Qoldiq'),
+             KeyboardButton(text=f"🛒Savat ({change_number(await sum_cart(user_id))} so'm)"),
+             KeyboardButton(text="👤Mening ma'lumotlarim👤"),
              KeyboardButton(text='Do\'kon haqida')
              ])
     if admin == True:
         kb.add(*[
             KeyboardButton(text='Settings')
         ])
-    kb.adjust(1, 1, 2, 2)
+    kb.adjust(1, 2, 1, 1, 2)
     return kb.as_markup(resize_keyboard=True)
 
 
@@ -67,9 +69,9 @@ def change_user_btn():
     return kb.as_markup(resize_keyboard=True)
 
 
-def cart_from_users():
+async def cart_from_users(user_id):
     kb = ReplyKeyboardBuilder()
-    kb.add(*[KeyboardButton(text=f"🛒Savat"), KeyboardButton(text="◀️Ortga")])
+    kb.add(*[KeyboardButton(text=f"🛒Savat ({change_number(await sum_cart(user_id))} so'm)"), KeyboardButton(text="◀️Ortga")])
     return kb.as_markup(resize_keyboard=True)
 
 
@@ -83,6 +85,11 @@ def debt_check():
 def group_confirm():
     kb = ReplyKeyboardBuilder()
     kb.add(*[KeyboardButton(text="✅QABUL QILDIM✅")])
+    return kb.as_markup(resize_keyboard=True)
+
+def otkazish():
+    kb = ReplyKeyboardBuilder()
+    kb.add(*[KeyboardButton(text="O'tkazib yuborish")])
     return kb.as_markup(resize_keyboard=True)
 
 

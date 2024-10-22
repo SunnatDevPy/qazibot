@@ -16,7 +16,7 @@ product_router = Router()
 async def book_callback(message: Message, state: FSMContext):
     data = await state.get_data()
     try:
-        await message.answer("Ortga", reply_markup=ReplyKeyboardRemove())
+        await message.answer("Ortga", reply_markup=await cart_from_users(message.from_user.id))
         await message.answer(html.bold("Mahsulotni tanlang: "),
                              reply_markup=await inl_products(int(data.get("product_id"))),
                              parse_mode="HTML")
@@ -44,13 +44,13 @@ async def book_callback(call: CallbackQuery, state: FSMContext):
             await call.message.answer(text[0], parse_mode='HTML')
         type = product.type
         if type == 'dona':
-            type = "Donali mahsulotga\nNechi dona ? Yozing"
+            type = "Nechi dona ? Yozing"
         else:
-            type = "Kg mahsulotga\nNechi kg ? Yozing"
+            type = "Nechi kg ? Yozing"
 
         await state.update_data(product_id=int(data[-1]), type=type, product_name=product.title, product_price=text[-1])
         await state.set_state(ProductOrderState.count)
-        await call.message.answer(type, reply_markup=cart_from_users())
+        await call.message.answer(type, reply_markup=await cart_from_users(user_id=call.from_user.id))
 
 
 @product_router.message(ProductOrderState.count)
@@ -83,7 +83,7 @@ async def book_callback(msg: Message, state: FSMContext):
                                       total=int(data.get('product_price') * price))
                 await msg.answer(
                     f"Savatga qo'shildi: {data.get('product_name')}\n\nBuyurtma qilish uchun savatga o'ting!",
-                    reply_markup=cart_from_users())
+                    reply_markup=await cart_from_users(user_id=msg.from_user.id))
                 await msg.answer(html.bold("Mahsulotni tanlang: "),
                                  reply_markup=await inl_products(product.category_id),
                                  parse_mode="HTML")

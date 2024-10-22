@@ -26,10 +26,10 @@ async def command_start(message: Message, state: FSMContext):
         else:
             if message.from_user.id in [279361769, 5649321700] + [i for i in await User.get_admins()]:
                 await message.answer(f'Xush kelibsiz Admin {message.from_user.first_name}',
-                                     reply_markup=menu_button(admin=True))
+                                     reply_markup=await menu_button(admin=True, user_id=message.from_user.id))
             else:
                 await message.answer(f'Xush kelibsiz {message.from_user.first_name}',
-                                     reply_markup=menu_button(admin=False))
+                                     reply_markup=await menu_button(admin=False, user_id=message.from_user.id))
 
 
 @start_router.message(Register.full_name)
@@ -96,7 +96,7 @@ async def register_full_name(call: CallbackQuery, state: FSMContext):
                                     parse_mode="HTML")
         if call.from_user.id in [5649321700, 279361769] + [i for i in await User.get_admins()]:
             await call.message.answer(f'Xush kelibsiz Admin {call.from_user.first_name}',
-                                      reply_markup=menu_button(admin=True))
+                                      reply_markup=await menu_button(admin=True, user_id=call.from_user.id))
         else:
             await call.message.answer(
                 html.bold("Ro'yxatdan o'tdingiz, tez orada adminlarimiz botni ishlatishga ruxsat berishadi!"),
@@ -128,8 +128,8 @@ async def register_full_name(call: CallbackQuery, bot: Bot, state: FSMContext):
     data = call.data.split('_')
     await call.message.delete()
     await bot.send_message(data[-1], 'Xush kelibsiz, bot ishlatishga ruxsat berildi',
-                           reply_markup=menu_button(admin=False))
+                           reply_markup=await menu_button(admin=False, user_id=call.from_user.id))
     await User.update(int(data[-1]), idora_turi=data[1])
     if call.from_user.id in [5649321700, 279361769] + [i for i in await User.get_admins()]:
         await call.message.answer(f'Bosh menu {call.from_user.first_name}',
-                                  reply_markup=menu_button(admin=True))
+                                  reply_markup=await menu_button(admin=True, user_id=call.from_user.id))

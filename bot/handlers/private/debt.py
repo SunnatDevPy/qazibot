@@ -77,7 +77,7 @@ async def settings(message: Message, state: FSMContext, bot: Bot):
             await message.answer("Barcha buyurtmalar yopildi", reply_markup=admin_panel())
             await bot.send_message(data.get('user_ids'),
                                    html.bold("Barcha buyurtmalar yopildi\n🤖 Bizni tanlaganiz uchun raxmat"),
-                                   parse_mode="HTML", reply_markup=menu_button(admin=False))
+                                   parse_mode="HTML", reply_markup=await menu_button(admin=False, user_id=message.from_user.id))
             await state.clear()
 
 
