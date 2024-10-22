@@ -14,13 +14,12 @@ async def product_detail(product, user):
         price = product.restoran_price
     else:
         price = product.optom_price
-    text = html_decoration.bold(f'''   
-{product.title}
+    text = f'''   
+<b>{product.title}</b>
 
 {product.description}
-
 {product.type} - {price} so'm
-''')
+'''
     return text, product.photo, price
 
 
