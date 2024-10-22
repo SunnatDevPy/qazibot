@@ -44,19 +44,13 @@ async def book_callback(call: CallbackQuery, state: FSMContext):
             await call.message.answer(text[0], parse_mode='HTML')
         type = product.type
         if type == 'dona':
-            type = 'dona'
-            count = "(5 / 15)"
+            type = "Donali mahsulotga\nNechi dona ? Yozing"
         else:
-            type = "kg"
-            count = "(1,2 / 30)"
+            type = "Kg mahsulotga\nNechi kg ? Yozing"
+
         await state.update_data(product_id=int(data[-1]), type=type, product_name=product.title, product_price=text[-1])
         await state.set_state(ProductOrderState.count)
-        await call.message.answer(
-            html.bold(
-                f"Siz {product.title} mahsulotni tanladingiz\n"
-                f"Miqdorini kiriting!\n"
-                f"Masalan {count} {type}da harif qatnashmasin❗"),
-            parse_mode="HTML", reply_markup=cart_from_users())
+        await call.message.answer(type, reply_markup=cart_from_users())
 
 
 @product_router.message(ProductOrderState.count)
