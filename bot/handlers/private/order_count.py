@@ -37,6 +37,7 @@ async def group_handler(call: CallbackQuery, bot: Bot):
         else:
             await call.message.delete()
             carts = await Cart.get_cart_in_user(call.from_user.id)
+            text = await cart(call.from_user.id, carts)
             await call.message.answer(text, reply_markup=await change_order_in_group(carts), parse_mode="HTML")
 
 
