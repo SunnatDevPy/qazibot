@@ -43,7 +43,7 @@ class ProductAdmin(ModelView):
 
 class UserModelView(ModelView):
     exclude_fields_from_edit = ('created_at', 'updated_at')
-    search_builder = ['id', 'username']
+    searchable_fields = ['id', 'username']
 
 class CategoryModelView(ModelView):
     exclude_fields_from_create = ('created_at', 'updated_at')
@@ -53,7 +53,7 @@ class CategoryModelView(ModelView):
 class OrdersModelView(ModelView):
     exclude_fields_from_create = ('created_at', 'updated_at')
     exclude_fields_from_edit = ('created_at', 'updated_at')
-    search_builder = ['id', 'user_id', 'payment']
+    searchable_fields = ['id', 'user_id', 'payment']
 
 
 
