@@ -29,6 +29,7 @@ async def book_callback(message: Message, state: FSMContext):
 @product_router.callback_query(F.data.startswith('product_'))
 async def book_callback(call: CallbackQuery, state: FSMContext):
     data = call.data.split('_')
+    await call.message.delete()
     if data[-1] == 'back':
         await call.message.delete()
         await call.message.answer(html.bold('Kategorialardan birini tanlang: '), reply_markup=await inl_categories(),
@@ -58,7 +59,6 @@ async def book_callback(call: CallbackQuery, state: FSMContext):
 async def book_callback(msg: Message, state: FSMContext):
     data = await state.get_data()
     product = await Product.get(int(data.get("product_id")))
-    await msg.delete()
     if msg.text == '⬅️Ortga':
         await state.clear()
         await msg.answer(html.bold("Mahsulotni tanlang: "),
