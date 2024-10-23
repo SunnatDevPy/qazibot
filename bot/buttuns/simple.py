@@ -61,7 +61,7 @@ def announce():
 
 def change_user_btn():
     kb = ReplyKeyboardBuilder()
-    kb.add(*[KeyboardButton(text="Ism-familiya"),
+    kb.add(*[KeyboardButton(text="Ism"),
              KeyboardButton(text="Contact"),
              KeyboardButton(text="Locatsiya"),
              KeyboardButton(text="◀️Ortga")])

@@ -86,7 +86,7 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
         total += i.total
     await Order.update(order.id, debt=total, total=total)
     text = await order_detail(order)
-    await message.answer("Buyurtmangi qabul qilindi tez orada aloqaga chiqamiz!",
+    await message.answer("Buyurtmangiz qabul qilindi tez orada aloqaga chiqamiz!",
                          reply_markup=await menu_button(admin=False, user_id=message.from_user.id))
     if data.get('delivery') == '🏃Olib ketish🏃':
         await message.answer_location(latitude=41.342221, longitude=69.275769)
