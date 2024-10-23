@@ -5,14 +5,6 @@ from db import Categorie, User, OrderItems
 from db.models.model import Product
 
 
-def confirm_text():
-    ikb = InlineKeyboardBuilder()
-    ikb.add(*[InlineKeyboardButton(text="✅Jo'natish✅", callback_data='confirm'),
-              InlineKeyboardButton(text="❌To'xtatish❌", callback_data='stop')])
-    ikb.adjust(2, repeat=True)
-    return ikb.as_markup()
-
-
 def confirm_inl():
     ikb = InlineKeyboardBuilder()
     ikb.add(*[InlineKeyboardButton(text='✅Tasdiqlash✅', callback_data=f'confirm_network'),
@@ -70,8 +62,29 @@ async def inl_categories_group():
 async def confirm_order_in_group(id_):
     ikb = InlineKeyboardBuilder()
     ikb.add(*[
-        InlineKeyboardButton(text="O'zgartirish", callback_data=f'group_change_{id_}'),
-        InlineKeyboardButton(text="Qabul qilish", callback_data=f'group_confirm_{id_}')
+        InlineKeyboardButton(text="✏Taxrirlash✏", callback_data=f'group_change_{id_}'),
+        InlineKeyboardButton(text="✅Tayyor✅", callback_data=f'group_confirm_{id_}')
+    ])
+    ikb.adjust(2)
+    return ikb.as_markup()
+
+
+def yolda(order_id):
+    ikb = InlineKeyboardBuilder()
+    ikb.add(*[InlineKeyboardButton(text="Yo'lda", callback_data=f'delivery_start_{order_id}')])
+    ikb.adjust(2, repeat=True)
+    return ikb.as_markup()
+
+def bordi(order_id):
+    ikb = InlineKeyboardBuilder()
+    ikb.add(*[InlineKeyboardButton(text="Yetib keldi", callback_data=f'delivery_compleat_{order_id}')])
+    ikb.adjust(2, repeat=True)
+    return ikb.as_markup()
+
+async def check_order_in_group(id_):
+    ikb = InlineKeyboardBuilder()
+    ikb.add(*[
+        InlineKeyboardButton(text="Qabul qildim", callback_data=f'check_order_{id_}')
     ])
     ikb.adjust(2)
     return ikb.as_markup()

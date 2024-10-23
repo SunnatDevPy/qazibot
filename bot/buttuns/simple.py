@@ -71,7 +71,9 @@ def change_user_btn():
 
 async def cart_from_users(user_id):
     kb = ReplyKeyboardBuilder()
-    kb.add(*[KeyboardButton(text=f"🛒Savat ({change_number(await sum_cart(user_id))} so'm)"), KeyboardButton(text="◀️Ortga")])
+    kb.add(*[KeyboardButton(text=f"🛒Savat ({change_number(await sum_cart(user_id))} so'm)"),
+             KeyboardButton(text="◀️Ortga")])
+    kb.adjust()
     return kb.as_markup(resize_keyboard=True)
 
 
@@ -86,6 +88,7 @@ def group_confirm():
     kb = ReplyKeyboardBuilder()
     kb.add(*[KeyboardButton(text="✅QABUL QILDIM✅")])
     return kb.as_markup(resize_keyboard=True)
+
 
 def otkazish():
     kb = ReplyKeyboardBuilder()

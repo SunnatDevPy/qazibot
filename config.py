@@ -1,9 +1,7 @@
 import os
 from dataclasses import dataclass, asdict
-from pathlib import Path
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
 
 load_dotenv()
 

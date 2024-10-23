@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
 
-from bot.buttuns.inline import confirm_order_in_group
+from bot.buttuns.inline import confirm_order_in_group, yolda, bordi
 from bot.detail_text import detail_text_order, order_detail
 from db import Order
 
@@ -32,8 +32,22 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
                                             reply_markup=None)
         await call.message.answer("Buyurtma qabul qilindi")
         order_text = await detail_text_order(int(data[-1]))
-        send_message = await bot.send_message(-1002460328299, order_text[0], parse_mode='HTML')
-        await bot.send_location(-1002460328299, order_text[-1], order_text[1], reply_to_message_id=send_message.message_id)
+        send_message = await bot.send_message(-1002460328299, order_text[0], parse_mode='HTML',
+                                              reply_markup=yolda(int(data[-1])))
+        await bot.send_location(-1002460328299, order_text[-1], order_text[1],
+                                reply_to_message_id=send_message.message_id)
+
+
+@group_router.callback_query(F.data.startswith("delivery_"))
+async def group_handler(call: CallbackQuery, bot: Bot):
+    data = call.data.split('_')
+    order = await Order.get(int(data[-1]))
+    if data[1] == 'start':
+        await bot.send_message(order.user_id, text="Buyurtmangiz yo'lga chiqdi")
+        await call.message.edit_reply_markup(call.inline_message_id, reply_markup=bordi(int(data[-1])))
+    elif data[1] == 'compleat':
+        await bot.send_message(order.user_id, text="Buyurtmangiz yetib keldi",
+                               reply_markup=None)
 
 
 # -1002460328299 -> yetkazish
