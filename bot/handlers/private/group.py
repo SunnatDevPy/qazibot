@@ -51,7 +51,7 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
 @group_router.message(NakladnoyOrderState.photo)
 async def group_handler(message: Message, bot: Bot, state: FSMContext):
     data = await state.get_data()
-    order = await data.get("order_id_in_group")
+    order = data.get("order_id_in_group")
     if message.photo:
         order = await Order.get(int(order))
         await bot.send_photo(order.user_id, photo=message.photo[-1].file_id,
