@@ -16,6 +16,7 @@ product_router = Router()
 async def book_callback(message: Message, state: FSMContext):
     data = await state.get_data()
     try:
+
         await message.answer("Ortga", reply_markup=await cart_from_users(message.from_user.id))
         await message.answer(html.bold("Mahsulotni tanlang: "),
                              reply_markup=await inl_products(int(data.get("product_id"))),
@@ -57,6 +58,7 @@ async def book_callback(call: CallbackQuery, state: FSMContext):
 async def book_callback(msg: Message, state: FSMContext):
     data = await state.get_data()
     product = await Product.get(int(data.get("product_id")))
+    await msg.delete()
     if msg.text == '⬅️Ortga':
         await state.clear()
         await msg.answer(html.bold("Mahsulotni tanlang: "),

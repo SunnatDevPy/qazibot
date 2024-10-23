@@ -19,10 +19,12 @@ async def command_start(message: Message, state: FSMContext):
     if message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
         await message.answer("Menu yopiq", reply_markup=ReplyKeyboardRemove())
     else:
+        print(message.from_user.id)
         user = await User.get(message.from_user.id)
+        print(user.id)
         if not user:
             await state.set_state(Register.full_name)
-            await message.answer(html.bold("Ro'yxatdan o'ting\nIsm familiyangizni kiriting"), parse_mode="HTML")
+            await message.answer(html.bold("Ro'yxatdan o'ting\nIsmingizni kiriting"), parse_mode="HTML")
         else:
             if message.from_user.id in [279361769, 5649321700] + [i for i in await User.get_admins()]:
                 await message.answer(f'Xush kelibsiz Admin {message.from_user.first_name}',
