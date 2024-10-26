@@ -68,7 +68,7 @@ async def count_book(message: Message, state: FSMContext):
 async def count_book(message: Message, state: FSMContext):
     await state.set_state(ConfirmBasket.debt)
     if message.voice:
-        await state.update_data(time=message.voice.file_id)
+        await state.update_data(voice=message.voice)
     else:
         await state.update_data(time=message.text)
     await message.answer("Tanlang", reply_markup=choose_payment())
@@ -79,7 +79,8 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(debt=message.text)
     data = await state.get_data()
     order = await Order.create(user_id=message.from_user.id, debt=0, payment=False,
-                               time=data.get('time'), debt_type=data.get('debt'), total=0,
+                               time="O'tkazib yuborish" if data.get('voice') else data.get('text'),
+                               debt_type=data.get('debt'), total=0,
                                delivery=data.get('delivery'))
     carts: list['Cart'] = await Cart.get_from_user(message.from_user.id)
     total = 0
@@ -94,12 +95,13 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     if data.get('delivery') == '🏃Olib ketish🏃':
         await message.answer_location(latitude=41.342221, longitude=69.275769)
         await message.answer("Bizning manzil, QaziSay")
-    # try:
-    await bot.send_voice(-1002455618820, voice=InputFile(data.get('text')), caption=text[0], parse_mode="HTML",
-                         reply_markup=await confirm_order_in_group(order.id))
-    # except:
-    #     await bot.send_message(-1002455618820, text[0], parse_mode="HTML",
-    #                            reply_markup=await confirm_order_in_group(order.id))
+    voice = data.get('voice')
+    try:
+        await bot.send_voice(-1002455618820, voice=voice.file_id, caption=text[0], parse_mode="HTML",
+                             reply_markup=await confirm_order_in_group(order.id))
+    except:
+        await bot.send_message(-1002455618820, text[0], parse_mode="HTML",
+                               reply_markup=await confirm_order_in_group(order.id))
     await state.clear()
 
 # -1002455618820 -> Order group
