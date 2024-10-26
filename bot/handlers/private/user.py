@@ -116,7 +116,7 @@ async def count_book(message: Message, state: FSMContext):
 
 @user_router.message(F.text == "Admin qo'shish")
 async def count_book(message: Message):
-    if message.from_user.id in [5649321700, 279361769] + [i for i in await User.get_admins()]:
+    if message.from_user.id in [5649321700, 279361769] + [i.id for i in await User.get_admins()]:
         await message.answer(html.bold("Adminlar ro'yxati"), parse_mode='HTML', reply_markup=await admins())
     else:
         await message.answer(f"Sizda huquq yo'q")
@@ -124,7 +124,7 @@ async def count_book(message: Message):
 
 @user_router.message(F.text == "To'lanmagan buyurtmalar")
 async def count_book(message: Message):
-    if message.from_user.id in [5649321700, 279361769] + [i for i in await User.get_admins()]:
+    if message.from_user.id in [5649321700, 279361769] + [i.id for i in await User.get_admins()]:
         owner = await Order.get_all()
         if owner:
             for i in owner:

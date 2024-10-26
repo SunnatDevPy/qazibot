@@ -26,7 +26,7 @@ async def command_start(message: Message, state: FSMContext):
             await state.set_state(Register.full_name)
             await message.answer(html.bold("Ro'yxatdan o'ting\nIsmingizni kiriting"), parse_mode="HTML")
         else:
-            if message.from_user.id in [279361769, 5649321700] + [i for i in await User.get_admins()]:
+            if message.from_user.id in [279361769, 5649321700] + [i.id for i in await User.get_admins()]:
                 await message.answer(f'Xush kelibsiz Admin {message.from_user.first_name}',
                                      reply_markup=await menu_button(admin=True, user_id=message.from_user.id))
             else:
@@ -132,6 +132,6 @@ async def register_full_name(call: CallbackQuery, bot: Bot, state: FSMContext):
     await bot.send_message(data[-1], 'Xush kelibsiz, bot ishlatishga ruxsat berildi',
                            reply_markup=await menu_button(admin=False, user_id=call.from_user.id))
     await User.update(int(data[-1]), idora_turi=data[1])
-    if call.from_user.id in [5649321700, 279361769] + [i for i in await User.get_admins()]:
+    if call.from_user.id in [5649321700, 279361769] + [i.id for i in await User.get_admins()]:
         await call.message.answer(f'Bosh menu {call.from_user.first_name}',
                                   reply_markup=await menu_button(admin=True, user_id=call.from_user.id))
