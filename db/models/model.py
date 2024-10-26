@@ -64,6 +64,7 @@ class Order(CreateModel):
     order_items: Mapped[list['OrderItems']] = relationship('OrderItems', back_populates='order')
     order_from_user: Mapped['User'] = relationship('User', back_populates='orders')
     delivery: Mapped[str]
+    nakladnoy: Mapped[str] = mapped_column(nullable=True)
 
 
 class OrderItems(CreateModel):

@@ -1,6 +1,6 @@
 from aiogram import Router, F, html, Bot
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery, InputFile
+from aiogram.types import Message, CallbackQuery
 
 from bot.buttuns.inline import confirm_order_in_group, change_order_in_group
 from bot.buttuns.simple import detail_delivery, cart_detail_btn, menu_button, choose_payment, otkazish

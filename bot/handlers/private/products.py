@@ -1,6 +1,6 @@
 from aiogram import Router, F, html
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery
 
 from bot.buttuns.inline import inl_products, inl_categories
 from bot.buttuns.simple import cart_from_users
@@ -68,11 +68,9 @@ async def book_callback(msg: Message, state: FSMContext):
         product_in_cart = await Cart.get_product_in_cart(msg.from_user.id, int(data.get("product_id")))
 
         try:
-            type = data.get('type')
-            text = msg.text.replace(',', '.').strip()
             price = float(msg.text.replace(',', '.').strip())
-            if '.' in msg.text and type == "dona":
-                await msg.answer(html.bold(f"Donali mahsulotga notog'ri malumot kiritdingiz!  (1 / 5)"),
+            if '.' in msg.text and product.type == "dona" or ',' in msg.text and product.type == "dona":
+                await msg.answer(html.bold(f"Donali mahsulotga notog'ri malumot kiritdingiz!"),
                                  parse_mode="HTML")
             else:
                 await state.update_data(count=price)

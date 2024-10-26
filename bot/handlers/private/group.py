@@ -54,6 +54,7 @@ async def group_handler(message: Message, bot: Bot, state: FSMContext):
     order = data.get("order_id_in_group")
     if message.photo:
         order = await Order.get(int(order))
+        await Order.update(order.id, nakladnoy=message.photo[-1].file_id)
         await bot.send_photo(order.user_id, photo=message.photo[-1].file_id,
                              caption=f"Buyurtmangiz yig'ilvotdi\nRaqami: {order.id}")
         await message.answer("Buyurtmachiga yuborildi")

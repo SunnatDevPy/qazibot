@@ -20,12 +20,16 @@ class DebtState(StatesGroup):
 @debt_router.message(F.text == 'Qarzini yopish')
 async def settingss(message: Message, state: FSMContext):
     await state.set_state(DebtState.search_user)
-    await message.answer("Ism-familiya, Contact yoki Idora nomini kiriting", reply_markup=ReplyKeyboardRemove())
+    await message.answer("User id, Ism, Contact yoki Idora nomini kiriting", reply_markup=ReplyKeyboardRemove())
 
 
 @debt_router.message(DebtState.search_user)
 async def settingss(message: Message, state: FSMContext):
     await state.clear()
+    try:
+        user_id = await User.get(int(message.text))
+    except:
+        user_id = None
     username = await User.get_from_username(message.text)
     contact = await User.get_from_contact(message.text)
     idora = await User.get_from_idora(message.text)
@@ -36,6 +40,8 @@ async def settingss(message: Message, state: FSMContext):
         user = contact
     elif idora:
         user = idora
+    elif user_id:
+        user = user_id
     else:
         user = None
     if user:
@@ -77,7 +83,8 @@ async def settings(message: Message, state: FSMContext, bot: Bot):
             await message.answer("Barcha buyurtmalar yopildi", reply_markup=admin_panel())
             await bot.send_message(data.get('user_ids'),
                                    html.bold("Barcha buyurtmalar yopildi\n🤖 Bizni tanlaganiz uchun raxmat"),
-                                   parse_mode="HTML", reply_markup=await menu_button(admin=False, user_id=message.from_user.id))
+                                   parse_mode="HTML",
+                                   reply_markup=await menu_button(admin=False, user_id=message.from_user.id))
             await state.clear()
 
 
