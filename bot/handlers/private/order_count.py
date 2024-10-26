@@ -51,7 +51,7 @@ async def count_book(message: Message, state: FSMContext):
 async def count_book(message: Message, state: FSMContext):
     await state.update_data(delivery=message.text)
     await state.set_state(ConfirmBasket.time)
-    await message.answer("Izox qoldiring", reply_markup=otkazish())
+    await message.answer("Izox yoki ovozli xabar qoldiring", reply_markup=otkazish())
 
 
 @order_router.message(F.text.startswith('Tozalash'))
@@ -67,7 +67,10 @@ async def count_book(message: Message, state: FSMContext):
 @order_router.message(ConfirmBasket.time)
 async def count_book(message: Message, state: FSMContext):
     await state.set_state(ConfirmBasket.debt)
-    await state.update_data(time=message.text)
+    if message.voice:
+        await state.update_data(time=message.voice.file_id)
+    else:
+        await state.update_data(time=message.text)
     await message.answer("Tanlang", reply_markup=choose_payment())
 
 
@@ -91,8 +94,12 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     if data.get('delivery') == '🏃Olib ketish🏃':
         await message.answer_location(latitude=41.342221, longitude=69.275769)
         await message.answer("Bizning manzil, QaziSay")
-    await bot.send_message(-1002455618820, text[0], parse_mode="HTML",
-                           reply_markup=await confirm_order_in_group(order.id))
+    try:
+        await bot.send_voice(-1002455618820, voice=data.get('text'), caption=text[0], parse_mode="HTML",
+                             reply_markup=await confirm_order_in_group(order.id))
+    except:
+        await bot.send_message(-1002455618820, text[0], parse_mode="HTML",
+                               reply_markup=await confirm_order_in_group(order.id))
     await state.clear()
 
 # -1002455618820 -> Order group
