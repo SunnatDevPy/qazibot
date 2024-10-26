@@ -1,6 +1,6 @@
 from aiogram import Router, F, html, Bot
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
+from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery, InputFile
 
 from bot.buttuns.inline import confirm_order_in_group, change_order_in_group
 from bot.buttuns.simple import detail_delivery, cart_detail_btn, menu_button, choose_payment, otkazish
@@ -94,12 +94,12 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     if data.get('delivery') == '🏃Olib ketish🏃':
         await message.answer_location(latitude=41.342221, longitude=69.275769)
         await message.answer("Bizning manzil, QaziSay")
-    try:
-        await bot.send_voice(-1002455618820, voice=data.get('text'), caption=text[0], parse_mode="HTML",
-                             reply_markup=await confirm_order_in_group(order.id))
-    except:
-        await bot.send_message(-1002455618820, text[0], parse_mode="HTML",
-                               reply_markup=await confirm_order_in_group(order.id))
+    # try:
+    await bot.send_voice(-1002455618820, voice=InputFile(data.get('text')), caption=text[0], parse_mode="HTML",
+                         reply_markup=await confirm_order_in_group(order.id))
+    # except:
+    #     await bot.send_message(-1002455618820, text[0], parse_mode="HTML",
+    #                            reply_markup=await confirm_order_in_group(order.id))
     await state.clear()
 
 # -1002455618820 -> Order group
