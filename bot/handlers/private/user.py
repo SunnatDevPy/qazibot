@@ -25,12 +25,12 @@ async def count_book(message: Message):
 async def count_book(message: Message, state: FSMContext):
     await state.set_state(ChangeUserState.type)
     text = message.text
+    await state.update_data(text=text)
     if text == "Ism":
         await message.answer("Ismingizni kiriting", reply_markup=ReplyKeyboardRemove())
     elif text == "Contact":
         await message.answer("Contactingizni kiriting", reply_markup=get_contact())
     elif text == "Locatsiya":
-        await state.update_data(text=text)
         await message.answer("Locatsiyangizni kiriting", reply_markup=get_location())
 
 
@@ -38,15 +38,28 @@ async def count_book(message: Message, state: FSMContext):
 async def count_book(message: Message, state: FSMContext):
     data = await state.get_data()
     user = await User.get(message.from_user.id)
-    if message.contact and data.get('text') == "Contact":
-        await User.update(message.from_user.id, contact=str(message.contact.phone_number))
-        await message.answer("Contactingiz o'zgardi")
-    elif message.location and data.get('text') == "Loacatsiya":
+    if data.get('text') == "Contact":
+        if message.contact:
+            await User.update(message.from_user.id, contact=message.contact.phone_number)
+            await message.answer(html.bold("Telefon raqam o'zgardi"), reply_markup=ReplyKeyboardRemove(),
+                                 parse_mode="HTML")
+        else:
+            try:
+                contact = int(message.text[1:])
+                await User.update(message.from_user.id, contact=message.text)
+                await message.answer(html.bold("Telefon raqam o'zgardi"), reply_markup=ReplyKeyboardRemove(),
+                                     parse_mode="HTML")
+            except:
+                await message.answer(html.bold("Telefon raqamni tog'ri kiriting"), parse_mode="HTML")
+
+    elif message.location and data.get('text') == "Locatsiya":
         await User.update(message.from_user.id, long=message.location.longitude, lat=message.location.latitude)
         await message.answer("Locatsiyangiz o'zgardi")
-    elif message.text and data.get('text') == "Ism":
+    elif data.get('text') == "Ism":
         await User.update(message.from_user.id, full_name=message.text)
         await message.answer("Ismingiz o'zgardi")
+    else:
+        await message.answer("Ma'lumot o'zgartirishda hatolik yuz berdi")
     await message.answer(
         register_detail(message, {"full_name": user.full_name, "contact": user.contact, "idora": user.idora}),
         parse_mode='HTML', reply_markup=change_user_btn())

@@ -57,6 +57,7 @@ async def group_handler(message: Message, bot: Bot, state: FSMContext):
         await bot.send_photo(order.user_id, photo=message.photo[-1].file_id,
                              caption=f"Buyurtmangiz yig'ilvotdi\nRaqami: {order.id}")
         await message.answer("Buyurtmachiga yuborildi")
+        await state.clear()
     else:
         await message.answer("Ma'lumot rasim e'mas")
 
