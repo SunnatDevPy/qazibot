@@ -166,16 +166,17 @@ async def info_orders_from_user(user_id):
     payment_false = await Order.get_order_payment_false(int(user_id))
     payment_true = await Order.get_order_payment_true(int(user_id))
     debt = await Order.get_order_total_and_debt_from_user(int(user_id))
+
     return f'''
 Statistika
 
 Buyurtmalar soni: <code>{payment_false[0] + payment_true[0]}</code> ta
-To'langan buyurtmalar soni: <code>{payment_true[0]}</code> ta
-To'lanmagan buyurtmalar soni: <code>{payment_false[0]}</code> ta
+To'langan buyurtmalar soni: <code>{0 if payment_true[0] == None else payment_true[0]}</code> ta
+To'lanmagan buyurtmalar soni: <code>{0 if payment_false[0] == None else payment_false[0]}</code> ta
 
-To'langan: <code>{change_number(payment_true[-1])}</code>  so'm
-Qoldiq: <code>{change_number(payment_false[-1])}</code> so'm
-Jami: <code>{change_number(debt[-1])}</code> so'm
+To'langan: <code>{change_number(0 if payment_true[0] == None else payment_true[0])}</code>  so'm
+Qoldiq: <code>{change_number(0 if payment_false[0] == None else payment_false[0])}</code> so'm
+Jami: <code>{change_number(0 if debt[-1] == None else debt[-1])}</code> so'm
     '''
 
 
@@ -190,10 +191,10 @@ Statistika
 Userlar soni: <code>{users}</code>
 
 Buyurtmalar soni: <code>{payment_false[0] + payment_true[0]}</code> ta
-To'langan buyurtmalar soni: <code>{payment_true[0]}</code> ta 
-To'lanmagan buyurtmalar son: <code>{payment_false[0]}</code> ta
+To'langan buyurtmalar soni: <code>{0 if payment_true[0] == None else payment_true[0]}</code> ta
+To'lanmagan buyurtmalar soni: <code>{0 if payment_false[0] == None else payment_false[0]}</code> ta
 
-To'langan: <code>{change_number(payment_true[-1])}</code>  so'm
-Qoldiq: <code>{change_number(payment_false[-1])}</code>  so'm
-Jami: <code>{change_number(debt[-1])}</code> so'm
+To'langan: <code>{change_number(0 if payment_true[0] == None else payment_true[0])}</code>  so'm
+Qoldiq: <code>{change_number(0 if payment_false[0] == None else payment_false[0])}</code> so'm
+Jami: <code>{change_number(0 if debt[-1] == None else debt[-1])}</code> so'm
     '''
