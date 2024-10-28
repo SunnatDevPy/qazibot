@@ -158,8 +158,9 @@ async def inline_query_handler(inline_query: InlineQuery, bot: Bot):
         InlineQueryResultArticle(
             id=str(i.id),
             title=str(i.title),
-            price=str(i.optom_price) if user.idora_turi == "Optom" else str(i.restoran_price),
-            input_message_content=InputTextMessageContent(message_text=i.description)
+            description=f"Narxi: {str(i.optom_price) if user.idora_turi == 'Optom' else str(i.restoran_price)}",
+            input_message_content=InputTextMessageContent(
+                message_text=f"{i.title}\n{str(i.optom_price) if user.idora_turi == 'Optom' else str(i.restoran_price)}\n{i.description}")
         ) for i in await Product.get_all()
     ]
     await bot.answer_inline_query(inline_query.id, results=results, cache_time=1)
