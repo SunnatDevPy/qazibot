@@ -11,6 +11,7 @@ from state.states import ConfirmBasket
 order_router = Router()
 
 
+@order_router.message(F.text == "◀️ Ortga")
 @order_router.message(F.text.startswith("🛒Savat ("))
 async def settings(message: Message):
     carts = await Cart.get_cart_in_user(message.from_user.id)
@@ -27,7 +28,6 @@ async def group_handler(call: CallbackQuery, bot: Bot):
     data = call.data.split('_')
     await call.answer()
     carts = await Cart.get_cart_in_user(call.from_user.id)
-    text = await cart(call.from_user.id, carts)
     if data[2] == 'delete':
         await Cart.delete(int(data[-1]))
         if len(carts) == 1:

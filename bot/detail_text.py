@@ -1,4 +1,5 @@
 from aiogram import html
+from aiogram.types import InlineQueryResultArticle, InputTextMessageContent
 from aiogram.utils.text_decorations import html_decoration
 
 from db import User, Order, Cart
@@ -40,6 +41,8 @@ async def order_detail(order):
         count += 1
     if order.time == "O'tkazib yuborish":
         izox = ''
+    elif order.time == None:
+        izox = ''
     else:
         izox = f"<b>Izoh</b>: {order.time}"
     text += f'''
@@ -73,6 +76,8 @@ async def order_from_user(order):
         count += 1
     if order.time == "O'tkazib yuborish":
         izox = ''
+    elif order.time == None:
+        izox = ''
     else:
         izox = f"<b>Izoh</b>: {order.time}"
     if order.payment == True:
@@ -96,6 +101,8 @@ async def detail_text_order(order_id):
     user: User = await User.get(order.user_id)
     time = str(order.created_at).split(".")[0]
     if order.time == "O'tkazib yuborish":
+        izox = ''
+    elif order.time == None:
         izox = ''
     else:
         izox = f"<b>Izoh</b>: {order.time}"
@@ -153,3 +160,23 @@ async def sum_cart(user_id):
     for i in carts:
         total += i.total
     return total
+
+# async def inlinequery(update, context):
+#     query = update.inline_query.query
+#
+#     # Список результатов
+#     results = [
+#         for i in await Product.get_all():
+#             InlineQueryResultArticle(
+#                 id=1,
+#                 title="Пример результата 1",
+#                 input_message_content=InputTextMessageContent("Вы выбрали результат 1")
+#             )
+#     ]
+#
+#     # Отправляем результаты обратно пользователю
+#     update.inline_query.answer(results)
+
+
+def info_orders_from_user(user_id):
+    pass

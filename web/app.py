@@ -8,6 +8,7 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette_admin.contrib.sqla import Admin, ModelView
+from starlette_admin.base import BaseAdmin
 
 from db import User, Categorie, Product, database, Order, OrderItems, Channel, About, Cart
 from web.provider import UsernameAndPasswordProvider
@@ -26,6 +27,21 @@ admin = Admin(
 )
 
 
+# class DashboardView(BaseAdmin):
+#     label = "Dashboard"
+#     icon = "fa fa-dashboard"  # Optional: add an icon for the dashboard
+#
+#     async def render(self, request):
+#         # Fetch statistics or any relevant data here
+#
+#
+#         return await render_template(
+#             "admin/dashboard.html",
+#             request=request,
+#             user_count=user_count,
+#             order_count=order_count,
+#         )
+
 class ProductAdmin(ModelView):
     form_overrides = {
         'type': SQLAlchemyEnum()
@@ -43,7 +59,6 @@ class ProductAdmin(ModelView):
 
 class UserModelView(ModelView):
     exclude_fields_from_edit = ('created_at', 'updated_at')
-    search_fields = ['id', 'username']
 
 class CategoryModelView(ModelView):
     exclude_fields_from_create = ('created_at', 'updated_at')
@@ -53,8 +68,6 @@ class CategoryModelView(ModelView):
 class OrdersModelView(ModelView):
     exclude_fields_from_create = ('created_at', 'updated_at')
     exclude_fields_from_edit = ('created_at', 'updated_at')
-    search_fields = ['id', 'user_id', 'payment']
-
 
 
 admin.add_view(UserModelView(User))

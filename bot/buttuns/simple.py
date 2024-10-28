@@ -21,6 +21,17 @@ async def menu_button(admin, user_id):
     return kb.as_markup(resize_keyboard=True)
 
 
+# Nakladnoy | To’lanmagan
+
+def order_in_user():
+    kb = ReplyKeyboardBuilder()
+    kb.add(*[KeyboardButton(text="Nakladnoy"),
+             KeyboardButton(text="To’lanmagan"),
+             KeyboardButton(text="⬅️Ortga")])
+    kb.adjust(2, 1)
+    return kb.as_markup(resize_keyboard=True)
+
+
 def admin_panel():
     kb = ReplyKeyboardBuilder()
     kb.add(*[
@@ -43,7 +54,7 @@ def excel():
         KeyboardButton(text="Kategoriya kiritish"),
         KeyboardButton(text="Mahsulot kiritish"),
         KeyboardButton(text="Mahsulot o'zgartirish"),
-        KeyboardButton(text="◀️Ortga")
+        KeyboardButton(text="⬅️Ortga")
     ])
     kb.adjust(2, 1, 1)
     return kb.as_markup(resize_keyboard=True)
@@ -54,7 +65,7 @@ def announce():
     kb.add(*[KeyboardButton(text="Rasm-Video Xabar"),
              KeyboardButton(text="Xabar"),
              KeyboardButton(text="Oddiy Xabar"),
-             KeyboardButton(text="◀️Ortga")])
+             KeyboardButton(text="⬅️Ortga")])
     kb.adjust(1, 2, 1)
     return kb.as_markup(resize_keyboard=True)
 
@@ -80,19 +91,15 @@ async def cart_from_users(user_id):
 def debt_check():
     kb = ReplyKeyboardBuilder()
     kb.row(*[KeyboardButton(text=f"Summa kiritish"), KeyboardButton(text="Barchasini yopish")])
-    kb.row(*[KeyboardButton(text=f"Protsess to'xtatish")])
-    return kb.as_markup(resize_keyboard=True)
-
-
-def group_confirm():
-    kb = ReplyKeyboardBuilder()
-    kb.add(*[KeyboardButton(text="✅QABUL QILDIM✅")])
+    kb.row(*[KeyboardButton(text=f"⬅️Ortga")])
     return kb.as_markup(resize_keyboard=True)
 
 
 def otkazish():
     kb = ReplyKeyboardBuilder()
-    kb.add(*[KeyboardButton(text="O'tkazib yuborish")])
+    kb.add(*[KeyboardButton(text="O'tkazib yuborish"),
+
+             KeyboardButton(text="◀️ Ortga")])
     return kb.as_markup(resize_keyboard=True)
 
 
@@ -112,7 +119,8 @@ def detail_delivery():
     kb = ReplyKeyboardBuilder()
     kb.add(*[
         KeyboardButton(text='🚕Yetkazib berish🚕'),
-        KeyboardButton(text='🏃Olib ketish🏃')
+        KeyboardButton(text='🏃Olib ketish🏃'),
+        KeyboardButton(text="◀️ Ortga")
     ])
     kb.adjust(2)
     return kb.as_markup(resize_keyboard=True)
@@ -122,7 +130,8 @@ def choose_payment():
     kb = ReplyKeyboardBuilder()
     kb.add(*[
         KeyboardButton(text='Qarzga'),
-        KeyboardButton(text='Naxtga')
+        KeyboardButton(text='Naxtga'),
+        KeyboardButton(text="◀️Ortga")
     ])
     kb.adjust(2, 1)
     return kb.as_markup(resize_keyboard=True)

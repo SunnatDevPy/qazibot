@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
 from bot.buttuns.inline import admins, payment_true
-from bot.buttuns.simple import get_contact, get_location, change_user_btn, admin_panel
+from bot.buttuns.simple import get_contact, get_location, change_user_btn, admin_panel, order_in_user
 from bot.detail_text import register_detail, order_from_user
 from db import User
 from db.models.model import About, Order
@@ -68,10 +68,23 @@ async def count_book(message: Message, state: FSMContext):
 
 @user_router.message(F.text == '📃Buyurtmalarim📃')
 async def count_book(message: Message):
+    await message.answer("Tanlang", reply_markup=order_in_user())
+
+
+@user_router.message(F.text.in_(["Nakladnoy", "To’lanmagan"]))
+async def count_book(message: Message):
     owner = await Order.get_from_user(message.from_user.id)
     if owner:
-        for i in owner:
-            await message.answer(await order_from_user(i), parse_mode="HTML")
+        if message.text == "Nakladnoy":
+            for i in owner:
+                try:
+                    await message.answer_photo(photo=i.nakladnoy, caption=f"Buyurtma soni: {i.id}", parse_mode="HTML")
+                except:
+                    print("Hatolik")
+        else:
+            for i in owner:
+                if i.payment == False:
+                    await message.answer(await order_from_user(i), parse_mode="HTML")
     else:
         await message.answer("Siz hali buyurtma qilmadingiz")
 

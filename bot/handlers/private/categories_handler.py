@@ -10,19 +10,21 @@ categories_router = Router()
 
 
 @categories_router.message(F.text == '◀️Ortga')
-async def settings(message: Message):
-    if message.from_user.id in [5649321700, 279361769] + [i for i in await User.get_admins()]:
+async def settings(message: Message, state: FSMContext):
+    if message.from_user.id in [5649321700, 279361769] + [i.id for i in await User.get_admins()]:
         await message.answer(f'Bosh menu',
                              reply_markup=await menu_button(admin=True, user_id=message.from_user.id))
     else:
         await message.answer('Bosh menu', reply_markup=await menu_button(admin=False, user_id=message.from_user.id))
+    await state.clear()
 
 
 @categories_router.message(F.text == "⬅️Ortga")
-async def settings(message: Message):
+async def settings(message: Message, state: FSMContext):
     await message.answer("⬅️Ortga", reply_markup=await cart_from_users(user_id=message.from_user.id))
     await message.answer(html.bold('Kategoriyalardan birini tanlang!'), parse_mode="HTML",
                          reply_markup=await inl_categories())
+    await state.clear()
 
 
 @categories_router.message(F.text == '📖 Menu 📖')

@@ -2,7 +2,8 @@ import pandas as pd
 from aiogram import Router, html, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove, InlineQuery, InlineQueryResultArticle, \
+    InputTextMessageContent
 
 from bot.buttuns.inline import admins
 from bot.buttuns.simple import cancel_excel, admin_panel, excel
@@ -22,6 +23,11 @@ class ExcelImportState(StatesGroup):
 @admin_router.message(F.text.startswith("Excel"))
 async def count_book(message: Message):
     await message.answer("Tanlang", reply_markup=excel())
+
+
+@admin_router.message(F.text == "⬅️Ortga")
+async def count_book(message: Message):
+    await message.answer("Settings", reply_markup=admin_panel())
 
 
 @admin_router.message(F.text.in_(["Kategoriya kiritish", "Mahsulot kiritish", "Mahsulot o'zgartirish"]))
@@ -141,3 +147,19 @@ Username: <code>@{user.username}</code>
         await call.answer(html.bold("Id kiritmadingiz"), parse_mode='HTML')
         await call.answer(html.bold("Adminlar ro'yxati"), parse_mode='HTML', reply_markup=await admins())
     await state.clear()
+
+
+@admin_router.inline_query()
+async def inline_query_handler(inline_query: InlineQuery, bot: Bot):
+    query = inline_query.query  # Текст, который ввел пользователь
+    user = await User.get(inline_query.from_user.id)
+
+    results = [
+        InlineQueryResultArticle(
+            id=str(i.id),
+            title=str(i.title),
+            price=str(i.optom_price) if user.idora_turi == "Optom" else str(i.restoran_price),
+            input_message_content=InputTextMessageContent(message_text=i.description)
+        ) for i in await Product.get_all()
+    ]
+    await bot.answer_inline_query(inline_query.id, results=results, cache_time=1)

@@ -46,6 +46,7 @@ async def inl_categories():
     ikb = InlineKeyboardBuilder()
     for i in products:
         ikb.add(*[InlineKeyboardButton(text=i.title, callback_data=f'categories_{i.id}')])
+    ikb.row(*[InlineKeyboardButton(text="🔍Qidiruv", switch_inline_query_current_chat=' ')])
     ikb.adjust(2, repeat=True)
     return ikb.as_markup()
 
@@ -75,11 +76,13 @@ def yolda(order_id):
     ikb.adjust(2, repeat=True)
     return ikb.as_markup()
 
+
 def bordi(order_id):
     ikb = InlineKeyboardBuilder()
     ikb.add(*[InlineKeyboardButton(text="Yetib keldi", callback_data=f'delivery_compleat_{order_id}')])
     ikb.adjust(2, repeat=True)
     return ikb.as_markup()
+
 
 async def check_order_in_group(id_):
     ikb = InlineKeyboardBuilder()
