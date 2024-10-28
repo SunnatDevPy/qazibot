@@ -153,7 +153,7 @@ Username: <code>@{user.username}</code>
 async def inline_query_handler(inline_query: InlineQuery, bot: Bot):
     query = inline_query.query  # Текст, который ввел пользователь
     user = await User.get(inline_query.from_user.id)
-
+    products = await Product.get_all()
     results = [
         InlineQueryResultArticle(
             id=str(i.id),
@@ -161,6 +161,6 @@ async def inline_query_handler(inline_query: InlineQuery, bot: Bot):
             description=f"Narxi: {str(i.optom_price) if user.idora_turi == 'Optom' else str(i.restoran_price)}",
             input_message_content=InputTextMessageContent(
                 message_text=f"{i.title}\n{str(i.optom_price) if user.idora_turi == 'Optom' else str(i.restoran_price)}\n{i.description}")
-        ) for i in await Product.get_all()
+        ) for i in products[0:50]
     ]
     await bot.answer_inline_query(inline_query.id, results=results, cache_time=1)
