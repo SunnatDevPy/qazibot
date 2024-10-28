@@ -3,7 +3,8 @@ from aiogram import Router, html, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove, InlineQuery, InlineQueryResultArticle, \
-    InputTextMessageContent
+    InputTextMessageContent, InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.buttuns.inline import admins
 from bot.buttuns.simple import cancel_excel, admin_panel, excel
@@ -171,6 +172,11 @@ ITEMS_PER_PAGE = 10
 #     next_offset = str(offset + ITEMS_PER_PAGE) if offset + ITEMS_PER_PAGE < len(products) else ""
 #     await bot.answer_inline_query(inline_query.id, results=results, cache_time=1, next_offset=next_offset)
 
+def inls(id_):
+    ikb = InlineKeyboardBuilder()
+    ikb.row(InlineKeyboardButton(text="Buyurtma berish", callback_data=f"product_{id_}"))
+    return ikb.as_markup()
+
 
 @admin_router.inline_query()
 async def inline_query_handler(inline_query: InlineQuery, bot: Bot):
@@ -196,7 +202,8 @@ async def inline_query_handler(inline_query: InlineQuery, bot: Bot):
             title=str(i.title),
             description=f"Narxi: {str(i.optom_price) if user.idora_turi == 'Optom' else str(i.restoran_price)}",
             input_message_content=InputTextMessageContent(
-                message_text=f"{i.title}\n{str(i.optom_price) if user.idora_turi == 'Optom' else str(i.restoran_price)}\n{i.description}")
+                message_text=f"{i.title}\n{str(i.optom_price) if user.idora_turi == 'Optom' else str(i.restoran_price)}\n{i.description}"),
+            # reply_markup=inls(i.id)
         ) for i in paginated_products
     ]
 

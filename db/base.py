@@ -159,6 +159,48 @@ class AbstractClass:
         return (await db.execute(query)).scalars()
 
     @classmethod
+    async def get_order_payment_true(cls, user_id):
+        query = select(func.count(cls.id), func.sum(cls.total)).where(cls.user_id == user_id, cls.payment == True)
+        result = (await db.execute(query)).one()
+        count, total_sum = result
+        return count, total_sum
+
+    @classmethod
+    async def get_order_payment_true_all(cls):
+        query = select(func.count(cls.id), func.sum(cls.total)).where(cls.payment == True)
+        result = (await db.execute(query)).one()
+        count, total_sum = result
+        return count, total_sum
+
+    @classmethod
+    async def get_order_payment_false(cls, user_id):
+        query = select(func.count(cls.id), func.sum(cls.debt)).where(cls.user_id == user_id, cls.payment == False)
+        result = (await db.execute(query)).one()
+        count, total_sum = result
+        return count, total_sum
+
+    @classmethod
+    async def get_order_payment_false_all(cls):
+        query = select(func.count(cls.id), func.sum(cls.debt)).where(cls.payment == False)
+        result = (await db.execute(query)).one()
+        count, total_sum = result
+        return count, total_sum
+
+    @classmethod
+    async def get_order_total_and_debt_from_user(cls, user_id):
+        query = select(func.sum(cls.debt), func.sum(cls.total)).where(cls.user_id == user_id)
+        result = (await db.execute(query)).one()
+        count, total_sum = result
+        return count, total_sum
+
+    @classmethod
+    async def get_order_total_and_debt_all(cls):
+        query = select(func.sum(cls.debt), func.sum(cls.total))
+        result = (await db.execute(query)).one()
+        count, total_sum = result
+        return count, total_sum
+
+    @classmethod
     async def get_all(cls):
         return (await db.execute(select(cls).order_by(cls.id))).scalars().all()
 

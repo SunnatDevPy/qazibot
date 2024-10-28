@@ -4,7 +4,7 @@ from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
 from bot.buttuns.inline import admins, payment_true
 from bot.buttuns.simple import get_contact, get_location, change_user_btn, admin_panel, order_in_user
-from bot.detail_text import register_detail, order_from_user
+from bot.detail_text import register_detail, order_from_user, info_orders_from_user, info_orders_from_admin
 from db import User
 from db.models.model import About, Order
 from state.states import ChangeUserState, GetOrder
@@ -68,6 +68,8 @@ async def count_book(message: Message, state: FSMContext):
 
 @user_router.message(F.text == '📃Buyurtmalarim📃')
 async def count_book(message: Message):
+    text = await info_orders_from_user(message.from_user.id)
+    await message.answer(text, parse_mode='HTML')
     await message.answer("Tanlang", reply_markup=order_in_user())
 
 
@@ -121,10 +123,10 @@ async def count_book(message: Message):
         await message.answer(f"Sizda huquq yo'q")
 
 
-@user_router.message(F.text == 'Userlar soni')
+@user_router.message(F.text == 'Statistika')
 async def count_book(message: Message, state: FSMContext):
-    count = await User.count()
-    await message.answer(f"Userlar soni: {count}", reply_markup=admin_panel())
+    text = await info_orders_from_admin()
+    await message.answer(text, reply_markup=admin_panel(), parse_mode="HTML")
 
 
 @user_router.message(F.text == "Admin qo'shish")

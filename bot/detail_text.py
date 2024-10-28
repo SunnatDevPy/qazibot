@@ -161,22 +161,39 @@ async def sum_cart(user_id):
         total += i.total
     return total
 
-# async def inlinequery(update, context):
-#     query = update.inline_query.query
-#
-#     # Список результатов
-#     results = [
-#         for i in await Product.get_all():
-#             InlineQueryResultArticle(
-#                 id=1,
-#                 title="Пример результата 1",
-#                 input_message_content=InputTextMessageContent("Вы выбрали результат 1")
-#             )
-#     ]
-#
-#     # Отправляем результаты обратно пользователю
-#     update.inline_query.answer(results)
+
+async def info_orders_from_user(user_id):
+    payment_false = await Order.get_order_payment_false(int(user_id))
+    payment_true = await Order.get_order_payment_true(int(user_id))
+    debt = await Order.get_order_total_and_debt_from_user(int(user_id))
+    return f'''
+Statistika
+
+Buyurtmalar soni: <code>{payment_false[0] + payment_true[0]}</code> ta
+To'langan buyurtmalar soni: <code>{payment_true[0]}</code> ta
+To'lanmagan buyurtmalar soni: <code>{payment_false[0]}</code> ta
+
+To'langan: <code>{change_number(payment_true[-1])}</code>  so'm
+Qoldiq: <code>{change_number(payment_false[-1])}</code> so'm
+Jami: <code>{change_number(debt[-1])}</code> so'm
+    '''
 
 
-def info_orders_from_user(user_id):
-    pass
+async def info_orders_from_admin():
+    payment_false = await Order.get_order_payment_false_all()
+    payment_true = await Order.get_order_payment_true_all()
+    debt = await Order.get_order_total_and_debt_all()
+    users = await User.count()
+    return f'''
+Statistika
+
+Userlar soni: <code>{users}</code>
+
+Buyurtmalar soni: <code>{payment_false[0] + payment_true[0]}</code> ta
+To'langan buyurtmalar soni: <code>{payment_true[0]}</code> ta 
+To'lanmagan buyurtmalar son: <code>{payment_false[0]}</code> ta
+
+To'langan: <code>{change_number(payment_true[-1])}</code>  so'm
+Qoldiq: <code>{change_number(payment_false[-1])}</code>  so'm
+Jami: <code>{change_number(debt[-1])}</code> so'm
+    '''

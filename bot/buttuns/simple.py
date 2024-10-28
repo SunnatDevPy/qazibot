@@ -35,7 +35,7 @@ def order_in_user():
 def admin_panel():
     kb = ReplyKeyboardBuilder()
     kb.add(*[
-        KeyboardButton(text='Userlar soni'),
+        KeyboardButton(text='Statistika'),
         KeyboardButton(text="Admin qo'shish"),
         KeyboardButton(text="To'lanmagan buyurtmalar"),
         KeyboardButton(text="Id bo'yicha buyurtma"),

@@ -26,30 +26,54 @@ async def book_callback(message: Message, state: FSMContext):
                              parse_mode="HTML")
 
 
+# @product_router.callback_query(F.data.startswith('product_'))
+# async def book_callback(call: CallbackQuery, state: FSMContext):
+#     data = call.data.split('_')
+#     # await call.message.delete()
+#     if data[-1] == 'back':
+#         await call.message.delete()
+#         await call.message.answer(html.bold('Kategorialardan birini tanlang: '), reply_markup=await inl_categories(),
+#                                   parse_mode="HTML")
+#     else:
+#         await call.answer()
+#         product = await Product.get(int(data[-1]))
+#         user = await User.get(call.from_user.id)
+#         text = await product_detail(product, user)
+#         try:
+#             await call.message.answer_photo(text[1],
+#                                             caption=text[0], parse_mode='HTML')
+#         except:
+#             await call.message.answer(text[0], parse_mode='HTML')
+#         type = product.type
+#         if type == 'dona':
+#             type = "Nechi dona ? Yozing"
+#         else:
+#             type = "Nechi kg ? Yozing"
+#
+#         await state.update_data(product_id=int(data[-1]), type=type, product_name=product.title, product_price=text[-1])
+#         await state.set_state(ProductOrderState.count)
+#         await call.message.answer(type, reply_markup=await cart_from_users(user_id=call.from_user.id))
+
 @product_router.callback_query(F.data.startswith('product_'))
 async def book_callback(call: CallbackQuery, state: FSMContext):
     data = call.data.split('_')
-    await call.message.delete()
+    await call.answer()
+
     if data[-1] == 'back':
         await call.message.delete()
-        await call.message.answer(html.bold('Kategorialardan birini tanlang: '), reply_markup=await inl_categories(),
+        await call.message.answer("Kategorialardan birini tanlang:", reply_markup=await inl_categories(),
                                   parse_mode="HTML")
     else:
-        await call.answer()
         product = await Product.get(int(data[-1]))
         user = await User.get(call.from_user.id)
         text = await product_detail(product, user)
-        try:
-            await call.message.answer_photo(text[1],
-                                            caption=text[0], parse_mode='HTML')
-        except:
-            await call.message.answer(text[0], parse_mode='HTML')
-        type = product.type
-        if type == 'dona':
-            type = "Nechi dona ? Yozing"
-        else:
-            type = "Nechi kg ? Yozing"
 
+        try:
+            await call.message.answer_photo(text[1], caption=text[0], parse_mode='HTML')
+        except Exception:
+            await call.message.answer(text[0], parse_mode='HTML')
+
+        type = "Nechi dona? Yozing" if product.type == 'dona' else "Nechi kg? Yozing"
         await state.update_data(product_id=int(data[-1]), type=type, product_name=product.title, product_price=text[-1])
         await state.set_state(ProductOrderState.count)
         await call.message.answer(type, reply_markup=await cart_from_users(user_id=call.from_user.id))
