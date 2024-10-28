@@ -149,11 +149,16 @@ Username: <code>@{user.username}</code>
     await state.clear()
 
 
+ITEMS_PER_PAGE = 10
+
+
 @admin_router.inline_query()
 async def inline_query_handler(inline_query: InlineQuery, bot: Bot):
     query = inline_query.query  # Текст, который ввел пользователь
+    offset = int(inline_query.offset) if inline_query.offset else 0
     user = await User.get(inline_query.from_user.id)
     products = await Product.get_all()
+    paginated_products = products[offset:offset + ITEMS_PER_PAGE]
     results = [
         InlineQueryResultArticle(
             id=str(i.id),
@@ -161,6 +166,7 @@ async def inline_query_handler(inline_query: InlineQuery, bot: Bot):
             description=f"Narxi: {str(i.optom_price) if user.idora_turi == 'Optom' else str(i.restoran_price)}",
             input_message_content=InputTextMessageContent(
                 message_text=f"{i.title}\n{str(i.optom_price) if user.idora_turi == 'Optom' else str(i.restoran_price)}\n{i.description}")
-        ) for i in products[0:50]
+        ) for i in paginated_products
     ]
-    await bot.answer_inline_query(inline_query.id, results=results, cache_time=1)
+    next_offset = str(offset + ITEMS_PER_PAGE) if offset + ITEMS_PER_PAGE < len(products) else ""
+    await bot.answer_inline_query(inline_query.id, results=results, cache_time=1, next_offset=next_offset)
