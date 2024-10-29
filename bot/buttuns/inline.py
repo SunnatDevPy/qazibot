@@ -73,7 +73,12 @@ async def confirm_order_in_group(id_):
 def yolda(order_id):
     ikb = InlineKeyboardBuilder()
     ikb.add(*[InlineKeyboardButton(text="Yo'lda", callback_data=f'delivery_start_{order_id}')])
-    ikb.adjust(2, repeat=True)
+    return ikb.as_markup()
+
+
+def qayta_buyurish(order_id):
+    ikb = InlineKeyboardBuilder()
+    ikb.add(*[InlineKeyboardButton(text="Qayta buyurtma berish", callback_data=f'qayta_{order_id}')])
     return ikb.as_markup()
 
 

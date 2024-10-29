@@ -41,7 +41,7 @@ async def order_detail(order):
         count += 1
     if order.time == "O'tkazib yuborish":
         izox = ''
-    elif order.time == None:
+    elif order.time == None or len(order.time) > 5:
         izox = ''
     else:
         izox = f"<b>Izoh</b>: {order.time}"
@@ -76,7 +76,7 @@ async def order_from_user(order):
         count += 1
     if order.time == "O'tkazib yuborish":
         izox = ''
-    elif order.time == None:
+    elif order.time == None or len(order.time) > 5:
         izox = ''
     else:
         izox = f"<b>Izoh</b>: {order.time}"
@@ -102,7 +102,7 @@ async def detail_text_order(order_id):
     time = str(order.created_at).split(".")[0]
     if order.time == "O'tkazib yuborish":
         izox = ''
-    elif order.time == None:
+    elif order.time == None or len(order.time) > 5:
         izox = ''
     else:
         izox = f"<b>Izoh</b>: {order.time}"

@@ -1,11 +1,12 @@
-from aiogram import Router, F, html
+from aiogram import Router, F, html, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
-from bot.buttuns.inline import admins, payment_true
-from bot.buttuns.simple import get_contact, get_location, change_user_btn, admin_panel, order_in_user
-from bot.detail_text import register_detail, order_from_user, info_orders_from_user, info_orders_from_admin
-from db import User
+from bot.buttuns.inline import admins, payment_true, qayta_buyurish, confirm_order_in_group
+from bot.buttuns.simple import get_contact, get_location, change_user_btn, admin_panel, order_in_user, menu_button
+from bot.detail_text import register_detail, order_from_user, info_orders_from_user, info_orders_from_admin, \
+    order_detail
+from db import User, OrderItems
 from db.models.model import About, Order
 from state.states import ChangeUserState, GetOrder
 
@@ -80,15 +81,36 @@ async def count_book(message: Message):
         if message.text == "Nakladnoy":
             for i in owner:
                 try:
-                    await message.answer_photo(photo=i.nakladnoy, caption=f"Buyurtma soni: {i.id}", parse_mode="HTML")
+                    await message.answer_photo(photo=i.nakladnoy, caption=f"Buyurtma soni: {i.id}", parse_mode="HTML",
+                                               reply_markup=qayta_buyurish(i.id))
                 except:
                     print("Hatolik")
         else:
             for i in owner:
                 if i.payment == False:
-                    await message.answer(await order_from_user(i), parse_mode="HTML")
+                    await message.answer(await order_from_user(i), parse_mode="HTML", reply_markup=qayta_buyurish(i.id))
     else:
         await message.answer("Siz hali buyurtma qilmadingiz")
+
+
+@user_router.callback_query(F.data.startswith('qayta_'))
+async def count_book(call: CallbackQuery, bot: Bot):
+    data = call.data.split('_')
+    order = await Order.get(int(data[-1]))
+    new_order = await Order.create(user_id=call.from_user.id, debt=order.total, payment=False,
+                                   time=order.time,
+                                   debt_type=order.debt_type, total=order.total,
+                                   delivery=order.delivery)
+    for i in await OrderItems.get_order_items(order.id):
+        await OrderItems.create(product_id=i.product_id, count=i.count, order_id=order.id)
+    text = await order_detail(new_order)
+    await call.message.answer("Buyurtmangiz qabul qilindi tez orada aloqaga chiqamiz!",
+                              reply_markup=await menu_button(admin=False, user_id=call.from_user.id))
+    if new_order.delivery == '🏃Olib ketish🏃':
+        await call.message.answer_location(latitude=41.342221, longitude=69.275769)
+        await call.message.answer("Bizning manzil, QaziSay")
+    await bot.send_message(-1002455618820, text[0], parse_mode="HTML",
+                           reply_markup=await confirm_order_in_group(order.id))
 
 
 @user_router.message(F.text == '📝Qoldiq')
