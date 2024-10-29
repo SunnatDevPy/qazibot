@@ -95,6 +95,7 @@ async def count_book(message: Message):
 
 @user_router.callback_query(F.data.startswith('qayta_'))
 async def count_book(call: CallbackQuery, bot: Bot):
+    await call.answer()
     data = call.data.split('_')
     order = await Order.get(int(data[-1]))
     new_order = await Order.create(user_id=call.from_user.id, debt=order.total, payment=False,
