@@ -109,6 +109,12 @@ def cancel_excel():
     return kb.as_markup(resize_keyboard=True)
 
 
+def cancel_sum():
+    kb = ReplyKeyboardBuilder()
+    kb.add(*[KeyboardButton(text="❌Toxtatish❌")])
+    return kb.as_markup(resize_keyboard=True)
+
+
 def get_contact():
     kb = ReplyKeyboardBuilder()
     kb.add(*[KeyboardButton(text='📞Contact jonatish📞', request_contact=True)])

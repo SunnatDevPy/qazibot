@@ -1,14 +1,21 @@
 from aiogram import Router, F, html, Bot
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
 from bot.buttuns.inline import confirm_order_in_group, change_order_in_group
-from bot.buttuns.simple import detail_delivery, cart_detail_btn, menu_button, choose_payment, otkazish
+from bot.buttuns.simple import detail_delivery, cart_detail_btn, menu_button, choose_payment, otkazish, cancel_sum
 from bot.detail_text import cart, order_detail
+from db import Product
 from db.models.model import Order, Cart, OrderItems
 from state.states import ConfirmBasket
 
 order_router = Router()
+
+
+class ChangeCartState(StatesGroup):
+    permission = State()
+    type = State()
 
 
 @order_router.message(F.text == "◀️ Ortga")
@@ -24,7 +31,7 @@ async def settings(message: Message):
 
 
 @order_router.callback_query(F.data.startswith("change_cart"))
-async def group_handler(call: CallbackQuery, bot: Bot):
+async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
     data = call.data.split('_')
     await call.answer()
     carts = await Cart.get_cart_in_user(call.from_user.id)
@@ -39,6 +46,37 @@ async def group_handler(call: CallbackQuery, bot: Bot):
             carts = await Cart.get_cart_in_user(call.from_user.id)
             text = await cart(call.from_user.id, carts)
             await call.message.answer(text, reply_markup=await change_order_in_group(carts), parse_mode="HTML")
+    elif data[2] == 'sum':
+        await call.message.delete()
+        await state.set_state(ChangeCartState.permission)
+        await state.update_data(cart_id=data[-1])
+        await call.message.answer("Miqdorini kiriting", reply_markup=cancel_sum())
+
+
+@order_router.message(ChangeCartState.permission)
+async def group_handler(message: Message, state: FSMContext):
+    data = await state.get_data()
+    carts: list['Cart'] = await Cart.get_cart_in_user(message.from_user.id)
+    cart_id: Cart = await Cart.get(int(data.get('cart_id')))
+    text = await cart(message.from_user.id, carts)
+    if message.text == "❌Toxtatish❌":
+        await message.answer("Protsess to'xtatildi", reply_markup=cart_detail_btn())
+        await message.answer(text, reply_markup=await change_order_in_group(carts), parse_mode="HTML")
+    else:
+        try:
+            product = await Product.get(cart_id.product_id)
+            sum = float(message.text.replace(',', '.').strip())
+            if '.' in message.text and product.type == "dona" or ',' in message.text and product.type == "dona":
+                await message.answer(html.bold(f"Donali mahsulotga notog'ri malumot kiritdingiz!"),
+                                     parse_mode="HTML")
+            else:
+                await Cart.update(int(data.get('cart_id')), count=sum)
+                await message.answer("Tanlangan mahsulot o'zgardi", reply_markup=cart_detail_btn())
+                await message.answer(text, reply_markup=await change_order_in_group(carts), parse_mode="HTML")
+                await state.clear()
+        except:
+            await message.answer(f"{message.text} noto'g'ri")
+            await message.answer(f"Boshqa malumot yubordingiz, yoki juda kotta son")
 
 
 @order_router.message(F.text.startswith('✅ Buyurtma qilish'))

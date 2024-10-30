@@ -118,7 +118,7 @@ async def change_order_in_group(carts):
             count = float(i.count)
         ikb.add(*[
             InlineKeyboardButton(text=product.title, callback_data=f'change_cart_confirms_{i.id}'),
-            InlineKeyboardButton(text=str(count), callback_data=f'change_cart_confirms_{i.id}'),
+            InlineKeyboardButton(text=str(count), callback_data=f'change_cart_sum_{i.id}'),
             InlineKeyboardButton(text="❌", callback_data=f'change_cart_delete_{i.id}')
         ])
     ikb.adjust(3, repeat=True)

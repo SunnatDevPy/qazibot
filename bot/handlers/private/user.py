@@ -81,14 +81,14 @@ async def count_book(message: Message):
         if message.text == "Nakladnoy":
             for i in owner:
                 try:
-                    await message.answer_photo(photo=i.nakladnoy, caption=f"Buyurtma soni: {i.id}", parse_mode="HTML",
-                                               reply_markup=qayta_buyurish(i.id))
+                    await message.answer_photo(photo=i.nakladnoy, caption=f"Buyurtma soni: {i.id}", parse_mode="HTML")
                 except:
                     print("Hatolik")
         else:
             for i in owner:
                 if i.payment == False:
-                    await message.answer(await order_from_user(i), parse_mode="HTML", reply_markup=qayta_buyurish(i.id))
+                    await message.answer(await order_from_user(i), parse_mode="HTML")
+                    # , reply_markup = qayta_buyurish(i.id)
     else:
         await message.answer("Siz hali buyurtma qilmadingiz")
 
