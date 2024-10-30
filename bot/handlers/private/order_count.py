@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
-from bot.buttuns.inline import confirm_order_in_group, change_order_in_group
+from bot.buttuns.inline import confirm_order_in_group, change_order_in_group, get_order_me
 from bot.buttuns.simple import detail_delivery, cart_detail_btn, menu_button, choose_payment, otkazish, cancel_sum
 from bot.detail_text import cart, order_detail
 from db import Product
@@ -136,10 +136,10 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     voice = data.get('voice')
     try:
         await bot.send_voice(-1002455618820, voice=voice.file_id, caption=text[0], parse_mode="HTML",
-                             reply_markup=await confirm_order_in_group(order.id))
+                             reply_markup=await get_order_me(order.id))
     except:
         await bot.send_message(-1002455618820, text[0], parse_mode="HTML",
-                               reply_markup=await confirm_order_in_group(order.id))
+                               reply_markup=await get_order_me(order.id))
     await state.clear()
 
 # -1002455618820 -> Order group

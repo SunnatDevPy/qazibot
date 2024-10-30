@@ -10,7 +10,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette_admin.contrib.sqla import Admin, ModelView
 from starlette_admin.base import BaseAdmin
 
-from db import User, Categorie, Product, database, Order, OrderItems, Channel, About, Cart
+from db import User, Categorie, Product, database, Order, OrderItems, Channel, About, Cart, OrderConfirmation
 from web.provider import UsernameAndPasswordProvider
 
 middleware = [
@@ -60,6 +60,7 @@ class ProductAdmin(ModelView):
 class UserModelView(ModelView):
     exclude_fields_from_edit = ('created_at', 'updated_at')
 
+
 class CategoryModelView(ModelView):
     exclude_fields_from_create = ('created_at', 'updated_at')
     exclude_fields_from_edit = ('created_at', 'updated_at')
@@ -77,6 +78,7 @@ admin.add_view(ModelView(About))
 admin.add_view(ModelView(Order))
 admin.add_view(ModelView(OrderItems))
 admin.add_view(ModelView(Cart))
+admin.add_view(ModelView(OrderConfirmation))
 
 admin.mount_to(app)
 

@@ -19,6 +19,8 @@ class User(CreateModel):
     idora_turi: Mapped[str] = mapped_column(String, nullable=True)
     orders: Mapped[list['Order']] = relationship('Order', back_populates='order_from_user')
     carts: Mapped[list["Cart"]] = relationship('Cart', back_populates='cart_from_user')
+    confirmation_order: Mapped[list["OrderConfirmation"]] = relationship('OrderConfirmation',
+                                                                         back_populates='confirmation_user')
 
 
 class BooleanEnum(Enum):
@@ -84,3 +86,11 @@ class Channel(CreateModel):
     id: Mapped[int] = mapped_column(BIGINT, primary_key=True)
     chat_id: Mapped[int] = mapped_column(BIGINT)
     type: Mapped[bool]
+
+
+class OrderConfirmation(CreateModel):
+    id: Mapped[int] = mapped_column(BIGINT, primary_key=True)
+    order_id: Mapped[int] = mapped_column(BIGINT, ForeignKey(Order.id, ondelete='CASCADE'))
+    user_id: Mapped[int] = mapped_column(BIGINT, ForeignKey(User.id, ondelete='CASCADE'))
+    confirmation_user: Mapped["User"] = relationship('User',
+                                                     back_populates='confirmation_order')

@@ -3,9 +3,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
 
-from bot.buttuns.inline import confirm_order_in_group, yolda, bordi
+from bot.buttuns.inline import confirm_order_in_group, yolda, bordi, get_order_me
 from bot.detail_text import detail_text_order, order_detail
-from db import Order
+from db import Order, OrderConfirmation
 
 group_router = Router()
 
@@ -20,6 +20,7 @@ class NakladnoyOrderState(StatesGroup):
     count = State()
 
 
+# get_order_me()
 @group_router.callback_query(F.data.startswith("group_"))
 async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
     data = call.data.split('_')
@@ -46,6 +47,19 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
                                                   reply_markup=yolda(int(data[-1])))
             await bot.send_location(-1002460328299, order_text[-1], order_text[1],
                                     reply_to_message_id=send_message.message_id)
+
+
+@group_router.callback_query(F.data.startswith("get_order"))
+async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
+    data = call.data.split('_')
+    confirmation_order = await OrderConfirmation.get_confirm_order(call.from_user.id, int(data[-1]))
+    if confirmation_order:
+        await OrderConfirmation.create(user_id=call.from_user.id, order_id=int(data[-1]))
+        await call.message.edit_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                             reply_markup=await confirm_order_in_group(int(data[-1])),
+                                             parse_mode="HTML")
+    else:
+        await call.message.answer(f"Boshqa buyurtma oling")
 
 
 @group_router.message(NakladnoyOrderState.photo)

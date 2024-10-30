@@ -72,6 +72,11 @@ class AbstractClass:
         return (await db.execute(query)).scalar()
 
     @classmethod
+    async def get_confirm_order(cls, user_id, order_id):
+        query = select(cls).where(cls.user_id == user_id, cls.order_id == order_id)
+        return (await db.execute(query)).scalar()
+
+    @classmethod
     async def create(cls, **kwargs):  # Create
         object_ = cls(**kwargs)
         db.add(object_)

@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from db import Categorie, User, OrderItems
+from db import Categorie, User
 from db.models.model import Product
 
 
@@ -10,6 +10,12 @@ def confirm_inl():
     ikb.add(*[InlineKeyboardButton(text='✅Tasdiqlash✅', callback_data=f'confirm_network'),
               InlineKeyboardButton(text="❌Toxtatish❌", callback_data=f'cancel_network')])
     ikb.adjust(2, repeat=True)
+    return ikb.as_markup()
+
+
+def get_order_me(order_id):
+    ikb = InlineKeyboardBuilder()
+    ikb.add(*[InlineKeyboardButton(text='✅Buyurtmani olish✅', callback_data=f'get_order_{order_id}')])
     return ikb.as_markup()
 
 
