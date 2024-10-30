@@ -174,8 +174,8 @@ Buyurtmalar soni: <code>{payment_false[0] + payment_true[0]}</code> ta
 To'langan buyurtmalar soni: <code>{0 if payment_true[0] == None else payment_true[0]}</code> ta
 To'lanmagan buyurtmalar soni: <code>{0 if payment_false[0] == None else payment_false[0]}</code> ta
 
-To'langan: <code>{change_number(0 if payment_true[0] == None else payment_true[0])}</code>  so'm
-Qoldiq: <code>{change_number(0 if payment_false[0] == None else payment_false[0])}</code> so'm
+To'langan: <code>{change_number(0 if payment_true[-1] == None else payment_true[-1])}</code>  so'm
+Qoldiq: <code>{change_number(0 if payment_false[-1] == None else payment_false[-1])}</code> so'm
 Jami: <code>{change_number(0 if debt[-1] == None else debt[-1])}</code> so'm
     '''
 
@@ -194,7 +194,7 @@ Buyurtmalar soni: <code>{payment_false[0] + payment_true[0]}</code> ta
 To'langan buyurtmalar soni: <code>{0 if payment_true[0] == None else payment_true[0]}</code> ta
 To'lanmagan buyurtmalar soni: <code>{0 if payment_false[0] == None else payment_false[0]}</code> ta
 
-To'langan: <code>{change_number(0 if payment_true[0] == None else payment_true[0])}</code>  so'm
-Qoldiq: <code>{change_number(0 if payment_false[0] == None else payment_false[0])}</code> so'm
+To'langan: <code>{change_number(0 if payment_true[-1] == None else payment_true[-1])}</code>  so'm
+Qoldiq: <code>{change_number(0 if payment_false[-1] == None else payment_false[-1])}</code> so'm
 Jami: <code>{change_number(0 if debt[-1] == None else debt[-1])}</code> so'm
     '''
