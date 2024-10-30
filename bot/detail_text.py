@@ -165,8 +165,15 @@ async def sum_cart(user_id):
 async def info_orders_from_user(user_id):
     payment_false = await Order.get_order_payment_false(int(user_id))
     payment_true = await Order.get_order_payment_true(int(user_id))
-    debt = await Order.get_order_total_and_debt_from_user(int(user_id))
-
+    try:
+        if payment_true[-1] == None:
+            debt = 0
+        elif payment_false == None:
+            debt = 0
+        else:
+            debt = payment_false[-1] + payment_true[-1]
+    except:
+        debt = 0
     return f'''
 Statistika
 
@@ -176,15 +183,23 @@ To'lanmagan buyurtmalar soni: <code>{0 if payment_false[0] == None else payment_
 
 To'langan: <code>{change_number(0 if payment_true[-1] == None else payment_true[-1])}</code>  so'm
 Qoldiq: <code>{change_number(0 if payment_false[-1] == None else payment_false[-1])}</code> so'm
-Jami: <code>{change_number(0 if debt[-1] == None else debt[-1])}</code> so'm
+Jami: <code>{change_number(debt)}</code> so'm
     '''
 
 
 async def info_orders_from_admin():
     payment_false = await Order.get_order_payment_false_all()
     payment_true = await Order.get_order_payment_true_all()
-    debt = await Order.get_order_total_and_debt_all()
     users = await User.count()
+    try:
+        if payment_true[-1] == None:
+            debt = 0
+        elif payment_false[0] == None:
+            debt = 0
+        else:
+            debt = payment_false[-1] + payment_true[-1]
+    except:
+        debt = 0
     return f'''
 Statistika
 
@@ -196,5 +211,5 @@ To'lanmagan buyurtmalar soni: <code>{0 if payment_false[0] == None else payment_
 
 To'langan: <code>{change_number(0 if payment_true[-1] == None else payment_true[-1])}</code>  so'm
 Qoldiq: <code>{change_number(0 if payment_false[-1] == None else payment_false[-1])}</code> so'm
-Jami: <code>{change_number(0 if debt[-1] == None else debt[-1])}</code> so'm
+Jami: <code>{change_number(debt)}</code> so'm
     '''
