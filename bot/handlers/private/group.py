@@ -53,7 +53,7 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
 async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
     data = call.data.split('_')
     confirmation_order = await OrderConfirmation.get_confirm_order(call.from_user.id, int(data[-1]))
-    if confirmation_order:
+    if confirmation_order is None:
         await OrderConfirmation.create(user_id=call.from_user.id, order_id=int(data[-1]))
         await call.message.edit_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                              reply_markup=await confirm_order_in_group(int(data[-1])),
