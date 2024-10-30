@@ -136,10 +136,10 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     voice = data.get('voice')
     try:
         await bot.send_voice(-1002455618820, voice=voice.file_id, caption=text[0], parse_mode="HTML",
-                             reply_markup=await get_order_me(order.id))
+                             reply_markup=get_order_me(order.id))
     except:
         await bot.send_message(-1002455618820, text[0], parse_mode="HTML",
-                               reply_markup=await get_order_me(order.id))
+                               reply_markup=get_order_me(order.id))
     await state.clear()
 
 # -1002455618820 -> Order group
