@@ -58,7 +58,7 @@ async def book_callback(message: Message, state: FSMContext):
 async def book_callback(call: CallbackQuery, state: FSMContext):
     data = call.data.split('_')
     await call.answer()
-
+    await call.message.delete()
     if data[-1] == 'back':
         await call.message.delete()
         await call.message.answer("Kategorialardan birini tanlang:", reply_markup=await inl_categories(),

@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
-from bot.buttuns.inline import confirm_order_in_group, change_order_in_group, get_order_me
+from bot.buttuns.inline import change_order_in_group, get_order_me
 from bot.buttuns.simple import detail_delivery, cart_detail_btn, menu_button, choose_payment, otkazish, cancel_sum
 from bot.detail_text import cart, order_detail
 from db import Product
@@ -50,7 +50,9 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
         await call.message.delete()
         await state.set_state(ChangeCartState.permission)
         await state.update_data(cart_id=data[-1])
-        await call.message.answer("Miqdorini kiriting", reply_markup=cancel_sum())
+        cart_id: Cart = await Cart.get(int(data[-1]))
+        product: Product = await Product.get(cart_id.product_id)
+        await call.message.answer(f"{product.title} hozirgi miqdori: {cart_id.count}\nYangi miqdorini kiriting", reply_markup=cancel_sum())
 
 
 @order_router.message(ChangeCartState.permission)
@@ -71,6 +73,8 @@ async def group_handler(message: Message, state: FSMContext):
                                      parse_mode="HTML")
             else:
                 await Cart.update(int(data.get('cart_id')), count=sum)
+                carts: list['Cart'] = await Cart.get_cart_in_user(message.from_user.id)
+                text = await cart(message.from_user.id, carts)
                 await message.answer("Tanlangan mahsulot o'zgardi", reply_markup=cart_detail_btn())
                 await message.answer(text, reply_markup=await change_order_in_group(carts), parse_mode="HTML")
                 await state.clear()

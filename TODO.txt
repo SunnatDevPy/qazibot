@@ -52,11 +52,13 @@ olib ketish fix qilish  ✅
 
 change mening malumotim ✅
 
-—-— Buyurtmalarim ——-
+—-— Buyurtmalarim ——-   ✅
 Nakladnoy | To’lanmagan
     boyagi klient qarzi
 
 
+savat           ✅
+statistika
 
 
 
