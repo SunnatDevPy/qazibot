@@ -19,9 +19,7 @@ async def command_start(message: Message, state: FSMContext):
     if message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
         await message.answer("Menu yopiq", reply_markup=ReplyKeyboardRemove())
     else:
-        print(message.from_user.id)
         user = await User.get(message.from_user.id)
-        print(user.id)
         if not user:
             await state.set_state(Register.full_name)
             await message.answer(html.bold("Ro'yxatdan o'ting\nIsmingizni kiriting"), parse_mode="HTML")
