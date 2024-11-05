@@ -52,7 +52,8 @@ async def group_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
         await state.update_data(cart_id=data[-1])
         cart_id: Cart = await Cart.get(int(data[-1]))
         product: Product = await Product.get(cart_id.product_id)
-        await call.message.answer(f"{product.title} hozirgi miqdori: {cart_id.count}\nYangi miqdorini kiriting", reply_markup=cancel_sum())
+        await call.message.answer(f"{product.title} hozirgi miqdori: {cart_id.count}\nYangi miqdorini kiriting",
+                                  reply_markup=cancel_sum())
 
 
 @order_router.message(ChangeCartState.permission)
@@ -120,8 +121,13 @@ async def count_book(message: Message, state: FSMContext):
 async def count_book(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(debt=message.text)
     data = await state.get_data()
+    time = None
+    if data.get('voice'):
+        time = "O'tkazib yuborish"
+    else:
+        time = data.get('text')
     order = await Order.create(user_id=message.from_user.id, debt=0, payment=False,
-                               time="O'tkazib yuborish" if data.get('voice') else data.get('text'),
+                               time=time,
                                debt_type=data.get('debt'), total=0,
                                delivery=data.get('delivery'))
     carts: list['Cart'] = await Cart.get_from_user(message.from_user.id)
