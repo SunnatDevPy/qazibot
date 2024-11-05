@@ -125,7 +125,7 @@ async def count_book(message: Message, state: FSMContext, bot: Bot):
     if data.get('voice'):
         time = "O'tkazib yuborish"
     else:
-        time = data.get('text')
+        time = data.get('time')
     order = await Order.create(user_id=message.from_user.id, debt=0, payment=False,
                                time=time,
                                debt_type=data.get('debt'), total=0,
